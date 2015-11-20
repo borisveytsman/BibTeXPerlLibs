@@ -1,0 +1,19 @@
+---
+abstract: 'Convert LaTeX commands to Unicode'
+author:
+  - 'Gerhard Gossen <gerhard.gossen@googlemail.com>'
+build_requires: {}
+configure_requires:
+  ExtUtils::MakeMaker: 6.31
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.102342, CPAN::Meta::Converter version 2.101670'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: LaTeX-ToUnicode
+requires:
+  perl: 5.8.0
+resources:
+  repository: http://github.com/gerhardgossen/latex-tounicode
+version: 0.03
