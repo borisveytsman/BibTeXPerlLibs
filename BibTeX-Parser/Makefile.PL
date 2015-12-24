@@ -10,7 +10,7 @@ use ExtUtils::MakeMaker 6.30;
 
 my %WriteMakefileArgs = (
   "ABSTRACT" => "A pure perl BibTeX parser",
-  "AUTHOR" => "Gerhard Gossen <gerhard.gossen\@googlemail.com>",
+  "AUTHOR" => "Gerhard Gossen <gerhard.gossen\@googlemail.com> and Boris Veytsman <boris\@varphi.com>",
   "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
@@ -29,7 +29,7 @@ my %WriteMakefileArgs = (
   "TEST_REQUIRES" => {
     "Test::More" => "0.88"
   },
-  "VERSION" => "0.65",
+  "VERSION" => "0.66",
   "test" => {
     "TESTS" => "t/*.t"
   }

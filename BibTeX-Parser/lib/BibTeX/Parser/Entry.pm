@@ -1,11 +1,12 @@
 package BibTeX::Parser::Entry;
 {
-  $BibTeX::Parser::Entry::VERSION = '0.65';
+  $BibTeX::Parser::Entry::VERSION = '0.66';
 }
 
 use warnings;
 use strict;
 
+use BibTeX::Parser;
 use BibTeX::Parser::Author;
 
 
@@ -122,74 +123,42 @@ sub _handle_cleaned_author_editor {
 no LaTeX::ToUnicode;
 
 sub _handle_author_editor {
-	my $type = shift;
-	my $self = shift;
-	if (@_) {
-		if (@_ == 1) { #single string
-			# my @names = split /\s+and\s+/i, $_[0];
-			my @names = _split_author_field( $_[0] );
-			$self->{"_$type"} = [map {new BibTeX::Parser::Author $_} @names];
-			$self->field($type, join " and ", @{$self->{"_$type"}});
-		} else {
-			$self->{"_$type"} = [];
-			foreach my $param (@_) {
-				if (ref $param eq "BibTeX::Author") {
-					push @{$self->{"_$type"}}, $param;
-				} else {
-					push @{$self->{"_$type"}}, new BibTeX::Parser::Author $param;
-				}
-
-				$self->field($type, join " and ", @{$self->{"_$type"}});
-			}
-		}
-	} else {
-		unless ( defined $self->{"_$type"} ) {
-			#my @names = split /\s+and\s+/i, $self->{$type} || "";
-			my @names = _split_author_field( $self->{$type} || "" );
-			$self->{"_$type"} = [map {new BibTeX::Parser::Author $_} @names];
-		}
-		return @{$self->{"_$type"}};
-	}
-}
-
-# _split_author_field($field)
-#
-# Split an author field into different author names.
-# Handles quoted names ({name}).
-sub _split_author_field {
-    my $field = shift;
-
-    return () if !defined $field || $field eq '';
-
-    my @names;
-
-    my $buffer;
-    while (!defined pos $field || pos $field < length $field) {
-	if ( $field =~ /\G ( .*? ) ( \{ | \s+ and \s+ )/xcgi ) {
-	    my $match = $1;
-	    if ( $2 =~ /and/i ) {
-		$buffer .= $match;
-		push @names, $buffer;
-		$buffer = "";
-	    } elsif ( $2 =~ /\{/ ) {
-		$buffer .= $match . "{";
-		if ( $field =~ /\G (.* \})/cgx ) {
-		    $buffer .= $1;
-		} else {
-		    die "Missing closing brace at " . substr( $field, pos $field, 10 );
-		}
-	    } else {
-		$buffer .= $match;
+    my $type = shift;
+    my $self = shift;
+    if (@_) {
+	if (@_ == 1) { #single string
+	    # my @names = split /\s+and\s+/i, $_[0];
+	    $_[0] =~ s/^\s*//; 
+	    $_[0] =~ s/\s*$//; 
+	    my @names = BibTeX::Parser::_split_braced_string($_[0], 
+							     '\s+and\s+');
+	    if (!scalar @names) {
+		$self->error('Bad names in author/editor field');
+		return;
 	    }
+	    $self->{"_$type"} = [map {new BibTeX::Parser::Author $_} @names];
+	    $self->field($type, join " and ", @{$self->{"_$type"}});
 	} else {
-	   #print "# $field " . (pos ($field) || 0) . "\n";
-	   $buffer .= substr $field, (pos $field || 0);
-	   last;
+	    $self->{"_$type"} = [];
+	    foreach my $param (@_) {
+		if (ref $param eq "BibTeX::Author") {
+		    push @{$self->{"_$type"}}, $param;
+		} else {
+		    push @{$self->{"_$type"}}, new BibTeX::Parser::Author $param;
+		}
+		
+		$self->field($type, join " and ", @{$self->{"_$type"}});
+	    }
 	}
+    } else {
+	unless ( defined $self->{"_$type"}) {
+	    my @names = BibTeX::Parser::_split_braced_string($self->{$type} || "", '\s+and\s+' );
+	    $self->{"_$type"} = [map {new BibTeX::Parser::Author $_} @names];
+	}
+	return @{$self->{"_$type"}};
     }
-    push @names, $buffer if $buffer;
-    return @names;
 }
+
 
 
 sub author {
@@ -235,6 +204,26 @@ sub raw_bibtex {
 	return $self->{_raw};
 }
 
+sub to_string {
+    my $self = shift;
+    my @fields = grep {!/^_/} keys %$self;	
+    my $result = '@'.$self->type."{".$self->key.",\n";
+    foreach my $field (@fields) {
+	my $value = $self->field($field);
+	if ($field eq 'author') {
+	    my @names = ($self->author);
+	    $value = join(' and ', @names);
+	}
+	if ($field eq 'editor') {
+	    my @names = ($self->editors);
+	    $value = join(' and ', @names);
+	}
+	$result .= "    $field = {"."$value"."},\n";
+    }
+    $result .= "}";
+    return $result;
+}
+
 1; # End of BibTeX::Entry
 
 __END__
@@ -246,7 +235,7 @@ BibTeX::Parser::Entry
 
 =head1 VERSION
 
-version 0.65
+version 0.66
 
 =head1 SYNOPSIS
 
@@ -265,15 +254,19 @@ by a BibTeX::Parser.
 	    my @editors = $entry->editor;
 
 	    ...
+
+	    print $entry->to_string;
     }
+
+   
 
 =head1 NAME
 
-BibTeX::Entry - Contains a single entry of a BibTeX document.
+BibTeX::Parser::Entry - Contains a single entry of a BibTeX document.
 
 =head1 VERSION
 
-version 0.65
+version 0.66
 
 =head1 FUNCTIONS
 
@@ -333,7 +326,7 @@ or strings.
 
 Note: You can also change the authors with $entry->field('editor', $editors_string)
 
-=head2 fieldlist()
+=head2 fieldlist ()
 
 Returns a list of all the fields used in this entry.
 
@@ -341,17 +334,22 @@ Returns a list of all the fields used in this entry.
 
 Returns a true value if this entry has a value for $fieldname.
 
-=head2 raw_bibtex
+=head2 raw_bibtex ()
 
 Return raw BibTeX entry (if available).
 
+=head2 to_string ()
+
+Returns a text of the BibTeX entry in BibTeX format
+
 =head1 AUTHOR
 
-Gerhard Gossen <gerhard.gossen@googlemail.com>
+Gerhard Gossen <gerhard.gossen@googlemail.com> and
+Boris Veytsman <boris@varphi.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Gerhard Gossen.
+This software is copyright (c) 2013-2015 by Gerhard Gossen and Boris Veytsman
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

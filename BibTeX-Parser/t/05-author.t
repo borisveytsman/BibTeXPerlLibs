@@ -26,7 +26,7 @@ my %names = (
 	"   "	=> [undef, undef, undef, undef],
 	"\n"	=> [undef, undef, undef, undef],
 	"al." => [undef, undef, "al.", undef],
-	"et. al." => [undef, undef, "et. al.", undef],
+	"et.~al." => [undef, undef, "et.~al.", undef],
 	"O'Malley, A." => ["A.", undef, "O'Malley", undef],
 	"A. O'Malley" => ["A.", undef, "O'Malley", undef],
 	"Arthur O'Malley" => ["Arthur", undef, "O'Malley", undef],
@@ -36,9 +36,9 @@ my %names = (
 	'L.M. M"uller' => ["L.M.", undef, 'M"uller', undef],
 	'M"uller, L.M.' => ["L.M.", undef, 'M"uller', undef],
 	'van Beethoven, Ludwig' => ["Ludwig", "van", "Beethoven", undef ],
-	'{Barnes and Noble, Inc.}' => [undef, undef, 'Barnes and Noble, Inc.', undef],
-        "Ludwigg {van Beethoven}" => ["Ludwigg", undef, "van Beethoven", undef],
-	'{van Beethoven}, Ludwig' => ["Ludwig", undef, "van Beethoven", undef ],
+	'{Barnes and Noble, Inc.}' => [undef, undef, '{Barnes and Noble, Inc.}', undef],
+        "Ludwigg {van Beethoven}" => ["Ludwigg", undef, "{van Beethoven}", undef],
+	'{van Beethoven}, Ludwig' => ["Ludwig", undef, "{van Beethoven}", undef ],
 );
 
 plan tests => (keys(%names) * 6 + 5);
