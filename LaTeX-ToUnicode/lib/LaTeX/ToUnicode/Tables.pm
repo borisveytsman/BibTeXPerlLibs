@@ -1,6 +1,6 @@
 package LaTeX::ToUnicode::Tables;
 BEGIN {
-  $LaTeX::ToUnicode::Tables::VERSION = '0.03';
+  $LaTeX::ToUnicode::Tables::VERSION = '0.04';
 }
 use strict;
 use warnings;
@@ -153,7 +153,7 @@ our %ACCENTS = (
     y => "\x{1e8f}",
     z => "\x{17c}"
   },
-  "=" => {
+  '=' => {
     A => "\x{100}",
     AE => "\x{1e2}",
     E => "\x{112}",
@@ -459,7 +459,7 @@ LaTeX::ToUnicode::Tables - Character tables for LaTeX::ToUnicode
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 CONSTANTS
 
@@ -497,11 +497,11 @@ Command names of formatting commands like C<\tt>
 
 =head1 AUTHOR
 
-Gerhard Gossen <gerhard.gossen@googlemail.com>
+Gerhard Gossen <gerhard.gossen@googlemail.com> and Boris Veytsman <boris@varphi.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Gerhard Gossen.
+This software is copyright (c) 2010-2015 by Gerhard Gossen and Boris Veytsman
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package LaTeX::ToUnicode;
 BEGIN {
-  $LaTeX::ToUnicode::VERSION = '0.03';
+  $LaTeX::ToUnicode::VERSION = '0.04';
 }
 #ABSTRACT: Convert LaTeX commands to Unicode
 
@@ -31,6 +31,8 @@ sub _convert_accents {
     my $string = shift;
     $string =~ s/({\\(.){(\\?\w{1,2})}})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # {\"{a}}
     $string =~ s/({\\(.)(\\?\w{1,2})})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # {\"a}
+    $string =~ s/(\\(.)(\\?\w{1,2}))/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # \"a
+    $string =~ s/(\\(.){(\\?\w{1,2})})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # \"{a}
     $string;
 }
 
@@ -101,7 +103,7 @@ LaTeX::ToUnicode - Convert LaTeX commands to Unicode
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 
@@ -144,11 +146,11 @@ note the missing backslash) are also handled.
 
 =head1 AUTHOR
 
-Gerhard Gossen <gerhard.gossen@googlemail.com>
+Gerhard Gossen <gerhard.gossen@googlemail.com> and Boris Veytsman <boris@varphi.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Gerhard Gossen.
+This software is copyright (c) 2010-2015 by Gerhard Gossen and Boris Veytsman
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
