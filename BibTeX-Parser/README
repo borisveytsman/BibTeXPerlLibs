@@ -1,7 +1,5 @@
-
-
 This archive contains the distribution BibTeX-Parser,
-version 0.66:
+version 0.68:
 
   A pure perl BibTeX parser
 
@@ -11,6 +9,4 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 
-Version 0.66 is the first version released by Boris Veytsman.
-It has an important change: now braces in names are kept to
-allow the proper output of the entries
+

@@ -2,6 +2,7 @@
 abstract: 'A pure perl BibTeX parser'
 author:
   - 'Gerhard Gossen <gerhard.gossen@googlemail.com>'
+  - 'Boris Veytsman <borisv@lk.net>'
 build_requires:
   Test::More: 0.88
 configure_requires:

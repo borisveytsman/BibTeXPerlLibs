@@ -15,6 +15,13 @@ sub new {
 	my ($class, $type, $key, $parse_ok, $fieldsref) = @_;
 
 	my %fields = defined $fieldsref ? %$fieldsref : ();
+	my $i=0;
+	foreach my $field (keys %fields) {
+	    if ($field !~ /^_/) {
+		$fields{_fieldnums}->{$field}=$i;
+		$i++;
+	    }
+	}
         if (defined $type) {
             $fields{_type} = uc($type);
         }
@@ -79,7 +86,12 @@ sub field {
 		return $self->{ lc( $field ) };
 	} else {
 		my ($self, $key, $value) = @_;
-		$self->{ lc( $key ) } = $value; #_sanitize_field($value);
+		my $field = lc ($key);
+		$self->{$field} = $value; #_sanitize_field($value);
+		if (!exists($self->{_fieldnums}->{$field})) {
+		    my $num = scalar keys %{$self->{_fieldnums}};
+		    $self->{_fieldnums}->{$field} = $num;
+		}
 	}
 
 }
@@ -207,6 +219,9 @@ sub raw_bibtex {
 sub to_string {
     my $self = shift;
     my @fields = grep {!/^_/} keys %$self;	
+    @fields = sort {
+	$self->{_fieldnums}->{$a} <=> 
+	    $self->{_fieldnums}->{$b}} @fields;
     my $result = '@'.$self->type."{".$self->key.",\n";
     foreach my $field (@fields) {
 	my $value = $self->field($field);

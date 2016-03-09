@@ -16,20 +16,15 @@ my $parser = new BibTeX::Parser $fh;
 while (my $entry = $parser->next) {
     if($entry->key eq 'key01') {
 	my $result='@ARTICLE{key01,
-    month = {January~1},
-    title = {Title text},
-    author = {Duck, Donald and Else, Someone},
     year = {1950},
+    author = {Duck, Donald and Else, Someone},
+    title = {Title text},
+    month = {January~1},
 }';
-    is(compare_entries($entry->to_string,$result),0);
+    is($entry->to_string,$result);
     }
 
 }
 
 done_testing();
 
-
-sub compare_entries {
-    @_ = map {join("\n",sort(split /\n/, $_))} @_;
-    return ($_[0] cmp $_[1]);
-}
