@@ -1,6 +1,6 @@
 package BibTeX::Parser::Entry;
 {
-  $BibTeX::Parser::Entry::VERSION = '0.66';
+  $BibTeX::Parser::Entry::VERSION = '0.68';
 }
 
 use warnings;

@@ -1,6 +1,6 @@
 package BibTeX::Parser::Author;
 {
-  $BibTeX::Parser::Author::VERSION = '0.66';
+  $BibTeX::Parser::Author::VERSION = '0.68';
 }
 
 use warnings;
