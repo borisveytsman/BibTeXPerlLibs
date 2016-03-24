@@ -1,6 +1,6 @@
 package BibTeX::Parser::Entry;
 {
-  $BibTeX::Parser::Entry::VERSION = '0.68';
+  $BibTeX::Parser::Entry::VERSION = '0.69';
 }
 
 use warnings;
@@ -218,6 +218,10 @@ sub raw_bibtex {
 
 sub to_string {
     my $self = shift;
+    my %options=@_;
+    if (!exists($options{canonize_names})) {
+	$options{canonize_names}=1;
+    }
     my @fields = grep {!/^_/} keys %$self;	
     @fields = sort {
 	$self->{_fieldnums}->{$a} <=> 
@@ -225,11 +229,11 @@ sub to_string {
     my $result = '@'.$self->type."{".$self->key.",\n";
     foreach my $field (@fields) {
 	my $value = $self->field($field);
-	if ($field eq 'author') {
+	if ($field eq 'author' && $options{canonize_names}) {
 	    my @names = ($self->author);
 	    $value = join(' and ', @names);
 	}
-	if ($field eq 'editor') {
+	if ($field eq 'editor' && $options{canonize_names}) {
 	    my @names = ($self->editors);
 	    $value = join(' and ', @names);
 	}
@@ -246,11 +250,7 @@ __END__
 
 =head1 NAME
 
-BibTeX::Parser::Entry
-
-=head1 VERSION
-
-version 0.66
+BibTeX::Parser::Entry - Contains a single entry of a BibTeX document.
 
 =head1 SYNOPSIS
 
@@ -275,13 +275,7 @@ by a BibTeX::Parser.
 
    
 
-=head1 NAME
 
-BibTeX::Parser::Entry - Contains a single entry of a BibTeX document.
-
-=head1 VERSION
-
-version 0.66
 
 =head1 FUNCTIONS
 
@@ -353,9 +347,18 @@ Returns a true value if this entry has a value for $fieldname.
 
 Return raw BibTeX entry (if available).
 
-=head2 to_string ()
+=head2 to_string ([options])
 
-Returns a text of the BibTeX entry in BibTeX format
+Returns a text of the BibTeX entry in BibTeX format.  Options is
+a hash.  Currently only the option C<canonize_names>
+is supported.  If true (the default), authors' and editors' 
+names are translated into canonical bibtex form.  The command 
+C<$entry-E<gt>to_string(canonize_names=E<gt>0)> overrides this behavior.
+
+=head1 VERSION
+
+version 0.69
+
 
 =head1 AUTHOR
 
@@ -364,7 +367,7 @@ Boris Veytsman <boris@varphi.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013-2015 by Gerhard Gossen and Boris Veytsman
+This software is copyright (c) 2013-2016 by Gerhard Gossen and Boris Veytsman
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

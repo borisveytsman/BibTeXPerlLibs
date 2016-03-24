@@ -1,6 +1,6 @@
 package BibTeX::Parser::Author;
 {
-  $BibTeX::Parser::Author::VERSION = '0.68';
+  $BibTeX::Parser::Author::VERSION = '0.69';
 }
 
 use warnings;
@@ -309,11 +309,7 @@ __END__
 
 =head1 NAME
 
-BibTeX::Parser::Author
-
-=head1 VERSION
-
-version 0.65
+BibTeX::Author - Contains a single author for a BibTeX document.
 
 =head1 SYNOPSIS
 
@@ -333,13 +329,7 @@ by a BibTeX::Parser.
     
     my ($first, $von, $last, $jr) = BibTeX::Author->split($fullname);
 
-=head1 NAME
 
-BibTeX::Author - Contains a single author for a BibTeX document.
-
-=head1 VERSION
-
-version 0.66
 
 =head1 FUNCTIONS
 
@@ -401,6 +391,11 @@ Anything in a "special characters" is on brace level 0.  Thus the following
 tokens are considered von parts:  C<von>, C<\NOOP{von}Von>, and
 the following token is not: C<{von}>
 
+=head1 VERSION
+
+version 0.69
+
+
 =head1 AUTHOR
 
 Gerhard Gossen <gerhard.gossen@googlemail.com> and
@@ -408,7 +403,7 @@ Boris Veytsman <boris@varphi.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013--2015 by Gerhard Gossen and Boris Veytsman.
+This software is copyright (c) 2013--2016 by Gerhard Gossen and Boris Veytsman.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

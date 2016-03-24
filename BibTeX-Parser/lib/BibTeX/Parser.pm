@@ -1,6 +1,6 @@
 package BibTeX::Parser;
 {
-  $BibTeX::Parser::VERSION = '0.68';
+  $BibTeX::Parser::VERSION = '0.69';
 }
 # ABSTRACT: A pure perl BibTeX parser
 use warnings;
@@ -265,9 +265,6 @@ __END__
 
 BibTeX::Parser - A pure perl BibTeX parser
 
-=head1 VERSION
-
-version 0.66
 
 =head1 SYNOPSIS
 
@@ -302,15 +299,7 @@ Parses BibTeX files.
 	    }
     }
 
-=for stopwords jr von
 
-=head1 NAME
-
-BibTeX::Parser - A pure perl BibTeX parser
-
-=head1 VERSION
-
-version 0.65
 
 =head1 FUNCTIONS
 
@@ -346,6 +335,11 @@ L<BibTeX::Parser::Author>
 
 =back
 
+=head1 VERSION
+
+version 0.69
+
+
 =head1 AUTHOR
 
 Gerhard Gossen <gerhard.gossen@googlemail.com> and
@@ -353,7 +347,7 @@ Boris Veytsman <boris@varphi.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013-2015 by Gerhard Gossen and Boris Veytsman
+This software is copyright (c) 2013-2016 by Gerhard Gossen and Boris Veytsman
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
