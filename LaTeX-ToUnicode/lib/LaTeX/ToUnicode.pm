@@ -29,10 +29,10 @@ sub convert {
 
 sub _convert_accents {
     my $string = shift;
-    $string =~ s/({\\(.){(\\?\w{1,2})}})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # {\"{a}}
-    $string =~ s/({\\(.)(\\?\w{1,2})})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # {\"a}
+    $string =~ s/(\{\\(.)\{(\\?\w{1,2})\}\})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # {\"{a}}
+    $string =~ s/(\{\\(.)(\\?\w{1,2})\})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # {\"a}
     $string =~ s/(\\(.)(\\?\w{1,2}))/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # \"a
-    $string =~ s/(\\(.){(\\?\w{1,2})})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # \"{a}
+    $string =~ s/(\\(.)\{(\\?\w{1,2})\})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # \"{a}
     $string;
 }
 
@@ -49,7 +49,7 @@ sub _convert_commands {
     my $string = shift;
 
     foreach my $command ( keys %LaTeX::ToUnicode::Tables::COMMANDS ) {
-        $string =~ s/{\\$command}/$LaTeX::ToUnicode::Tables::COMMANDS{$command}/g;
+        $string =~ s/\{\\$command\}/$LaTeX::ToUnicode::Tables::COMMANDS{$command}/g;
         $string =~ s/\\$command(?=\s|\b)/$LaTeX::ToUnicode::Tables::COMMANDS{$command}/g;
     }
 
@@ -79,8 +79,8 @@ sub _convert_markups {
     my $string = shift;
 
     my $markups = join( '|', @LaTeX::ToUnicode::Tables::MARKUPS );
-    $string =~ s/({[^{}]+)\\(?:$markups)\s+([^{}]+})/$1$2/g; # { ... \command ... }
-    my $pattern = qr/{\\(?:$markups)\s+([^{}]*)}/o;
+    $string =~ s/(\{[^{}]+)\\(?:$markups)\s+([^{}]+\})/$1$2/g; # { ... \command ... }
+    my $pattern = qr/\{\\(?:$markups)\s+([^{}]*)\}/o;
     $string =~ s/$pattern/$1/g;
 
     $string =~ s/``/“/g;
