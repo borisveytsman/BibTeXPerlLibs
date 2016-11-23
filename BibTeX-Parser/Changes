@@ -1,5 +1,8 @@
 Revision history for BibTeX-Parser
 
+0.70    2016-11-23 02:28:35+00:00
+        Compatibility with perl 5.25 (Alexandr Ciornii)
+
 0.69    2016-03-24 15:13:50-04:00
 	Added option canonize_names to Entry::to_string
 

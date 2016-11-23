@@ -1,6 +1,6 @@
 package BibTeX::Parser::Entry;
 {
-  $BibTeX::Parser::Entry::VERSION = '0.69';
+  $BibTeX::Parser::Entry::VERSION = '0.70';
 }
 
 use warnings;
@@ -357,7 +357,7 @@ C<$entry-E<gt>to_string(canonize_names=E<gt>0)> overrides this behavior.
 
 =head1 VERSION
 
-version 0.69
+version 0.70
 
 
 =head1 AUTHOR
