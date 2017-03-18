@@ -18,12 +18,14 @@ while (my $entry = $parser->next) {
 	my $result1='@ARTICLE{key01,
     year = {1950},
     author = {Duck, Donald and Else, Someone},
+    editor = {Itor, E. D. and Other, A. N.},
     title = {Title text},
     month = {January~1},
 }';
 	my $result2='@ARTICLE{key01,
     year = {1950},
     author = {Donald Duck and Someone Else},
+    editor = {E. D. Itor and A. N. Other},
     title = {Title text},
     month = {January~1},
 }';

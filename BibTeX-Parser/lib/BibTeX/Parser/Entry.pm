@@ -1,6 +1,6 @@
 package BibTeX::Parser::Entry;
 {
-  $BibTeX::Parser::Entry::VERSION = '0.70';
+  $BibTeX::Parser::Entry::VERSION = '1.00';
 }
 
 use warnings;
@@ -234,7 +234,7 @@ sub to_string {
 	    $value = join(' and ', @names);
 	}
 	if ($field eq 'editor' && $options{canonize_names}) {
-	    my @names = ($self->editors);
+	    my @names = ($self->editor);
 	    $value = join(' and ', @names);
 	}
 	$result .= "    $field = {"."$value"."},\n";
@@ -357,7 +357,7 @@ C<$entry-E<gt>to_string(canonize_names=E<gt>0)> overrides this behavior.
 
 =head1 VERSION
 
-version 0.70
+version 1.00
 
 
 =head1 AUTHOR
