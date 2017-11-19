@@ -239,7 +239,16 @@ sub to_string {
     if ($options{print_pre}) {
 	$result .= $self->pre()."\n";
     }
-    $result .= '@'.$self->type."{".$self->key.",\n";    
+    my $type = $self->type;
+    if (exists($options{type_capitalization})) {
+	if ($options{type_capitalization} eq 'Lowercase') {
+	    $type = lc $type;
+	}
+	if ($options{type_capitalization} eq 'Titlecase') {
+	    $type = ucfirst lc $type;
+	}
+    }
+    $result .= '@'.$type."{".$self->key.",\n";    
     foreach my $field (@fields) {
 	my $value = $self->field($field);
 	if ($field eq 'author' && $options{canonize_names}) {
@@ -250,7 +259,15 @@ sub to_string {
 	    my @names = ($self->editor);
 	    $value = join(' and ', @names);
 	}
-	$result .= "    $field = {"."$value"."},\n";
+	if (exists($options{field_capitalization})) {
+	    if ($options{field_capitalization} eq 'Uppercase') {
+		$field = uc $field;
+	    }
+	    if ($options{field_capitalization} eq 'Titlecase') {
+		$field = ucfirst  $field;
+	    }
+	}
+	$result .= "    $field = {"."$value"."},\n";	
     }
     $result .= "}";
     return $result;
@@ -366,7 +383,7 @@ Return raw BibTeX entry (if available).
 
 =head2 to_string ([options])
 
-Returns a text of the BibTeX entry in BibTeX format.  Options is
+Returns a text of the BibTeX entry in BibTeX format.  Options are
 a hash.  
 
 =over 4
@@ -377,11 +394,22 @@ If true (the default), authors' and editors'
 names are translated into canonical bibtex form.  The command 
 C<$entry-E<gt>to_string(canonize_names=E<gt>0)> overrides this behavior.
 
+=item C<field_capitalization>
+
+Capitalization of the field names.  
+Can take values 'Uppercase', 'Lowercase' (the default) or 'Titlecase'
+
 =item C<print_pre>
 
 False by default.  If true, the text in the Bib file before the
 entry is printed.  Note that at present we assume the text 
 before the entry NEVER has the @ symbol inside
+
+=item C<type_capitalization>
+
+Capitalization of the type names.  
+Can take values 'Uppercase' (the default), 'Lowercase' or 'Titlecase'
+
 
 =back
 

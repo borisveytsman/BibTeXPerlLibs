@@ -24,6 +24,7 @@ t/11-split_braced.t
 t/12-von_token.t
 t/13_output.t
 t/14-extratext.t
+t/15-capitalization.t
 t/bibs/01.bib
 t/bibs/06.bib
 t/bibs/09-complex.bib
