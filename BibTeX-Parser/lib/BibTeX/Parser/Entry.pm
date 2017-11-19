@@ -1,6 +1,6 @@
 package BibTeX::Parser::Entry;
 {
-  $BibTeX::Parser::Entry::VERSION = '1.00';
+  $BibTeX::Parser::Entry::VERSION = '1.01';
 }
 
 use warnings;
@@ -216,17 +216,30 @@ sub raw_bibtex {
 	return $self->{_raw};
 }
 
+sub pre {
+	my $self = shift;
+	if (@_) {
+		$self->{_pre} = shift;
+	}
+	return $self->{_pre};
+}
+
+
 sub to_string {
     my $self = shift;
     my %options=@_;
     if (!exists($options{canonize_names})) {
 	$options{canonize_names}=1;
     }
-    my @fields = grep {!/^_/} keys %$self;	
+    my @fields = grep {!/^_/} keys %$self;
     @fields = sort {
 	$self->{_fieldnums}->{$a} <=> 
 	    $self->{_fieldnums}->{$b}} @fields;
-    my $result = '@'.$self->type."{".$self->key.",\n";
+    my $result = '';
+    if ($options{print_pre}) {
+	$result .= $self->pre()."\n";
+    }
+    $result .= '@'.$self->type."{".$self->key.",\n";    
     foreach my $field (@fields) {
 	my $value = $self->field($field);
 	if ($field eq 'author' && $options{canonize_names}) {
@@ -343,6 +356,10 @@ Returns a list of all the fields used in this entry.
 
 Returns a true value if this entry has a value for $fieldname.
 
+=head2 pre ()
+
+Return the text in BibTeX file before the entry
+
 =head2 raw_bibtex ()
 
 Return raw BibTeX entry (if available).
@@ -350,15 +367,27 @@ Return raw BibTeX entry (if available).
 =head2 to_string ([options])
 
 Returns a text of the BibTeX entry in BibTeX format.  Options is
-a hash.  Currently only the option C<canonize_names>
-is supported.  If true (the default), authors' and editors' 
+a hash.  
+
+=over 4
+
+=item C<canonize_names>
+
+If true (the default), authors' and editors' 
 names are translated into canonical bibtex form.  The command 
 C<$entry-E<gt>to_string(canonize_names=E<gt>0)> overrides this behavior.
 
+=item C<print_pre>
+
+False by default.  If true, the text in the Bib file before the
+entry is printed.  Note that at present we assume the text 
+before the entry NEVER has the @ symbol inside
+
+=back
+
 =head1 VERSION
 
-version 1.00
-
+version 1.01
 
 =head1 AUTHOR
 

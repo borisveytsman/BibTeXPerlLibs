@@ -1,5 +1,9 @@
 Revision history for BibTeX-Parser
 
+1.01    2017-11-19 03:12:34 +0000
+	New options for to_string:
+	- print_pre - whether to print text preceding the entry
+
 1.00    2017-03-18 21:53:15+00:00
 	Typo corrected:  editors -> editor
 
