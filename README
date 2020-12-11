@@ -1,1 +1,36 @@
-Here are perl-only BibTex modules by Gerhard Gossen.
+			   BibTeX Perl Libs
+			     Version 1.5
+		  Gerhard Gossen and Boris Veytsman
+
+This package provides BibTeX related Perl libraries by Gerhard Gossen,
+maintained and repackaged by Boris Veytsman for TeX Live and other
+TDS-compliant distributions.  The libraries are written in pure Perl,
+so shoud work out of the box on any architecture.
+
+To use them in your scripts, add to the @INC variable the directory
+scripts/bibtexperllibs inside your TeX distribution.
+
+Bug reports, source code: https://github.com/borisveytsman/bibtexperllibs
+Releases: https://ctan.org/pkg/bibtexperllibs
+
+Changes:
+
+2020-12-10 LaTeX::ToUnicode 0.11 for more ltx2crossrefxml support.
+           (No changes to BibTeX::Parser.)
+
+  version 1.5 Upgraded BibTeX::Parser to 1.02 (bugfixes)
+
+  version 1.4  Upgraded BibTeX::Parser to 1.01
+
+  version 1.3  Upgraded BibTeX::Parser to 1.00
+
+  version 1.2  Upgraded BibTeX::Parser to v0.70 and LaTeX::ToUnicode to 0.05
+
+  version 1.1  Upgraded BibTeX::Parser to v0.69
+
+  version 1.0  Upgraded BibTeX::Parser to v0.68 and LaTeX::ToUnicode to 0.04
+
+  version 0.2  New upstream version for BibTeX::Parser (0.66)
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
