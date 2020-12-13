@@ -143,6 +143,7 @@ version 0.11
   convert( '"a',             ) eq '"a';  # not enabled by default
   
   # more generally:
+  my $latexstr;
   my $unistr = convert($latexstr);
 
 =head1 DESCRIPTION
