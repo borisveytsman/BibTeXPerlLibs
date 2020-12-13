@@ -19,4 +19,4 @@ install:
 	for dir in ${DIRS}; do (cd $$dir && ${MAKE} -f Makefile.TDS install); done
 
 archive:
-	COPYFILE_DISABLE=1 tar -czvf $(PACKAGE).tgz -C .. --exclude '*~' --exclude '*.tgz' --exclude CVS $(PACKAGE)
+	COPYFILE_DISABLE=1 tar -czvf $(PACKAGE).tgz -C .. --exclude '*~' --exclude '*.tgz' --exclude CVS  --exclude .git --exclude .gitignore --exclude blib  --exclude "*.tar.gz" $(PACKAGE)
