@@ -24,7 +24,7 @@ sub convert {
     $string = _convert_specials( $string );
     $string = _convert_ligatures( $string );
     $string = _convert_markups( $string );
-    $string =~ s/{(\w*)}/$1/g;
+    $string =~ s/{(\w*)}/$1/g; # drop braces around text at end
     $string;
 }
 
@@ -32,8 +32,19 @@ sub _convert_commands {
     my $string = shift;
 
     foreach my $command ( keys %LaTeX::ToUnicode::Tables::COMMANDS ) {
-        $string =~ s/\{\\$command\}/$LaTeX::ToUnicode::Tables::COMMANDS{$command}/g;
-        $string =~ s/\\$command(?=\s|\b)/$LaTeX::ToUnicode::Tables::COMMANDS{$command}/g;
+        my $repl = $LaTeX::ToUnicode::Tables::COMMANDS{$command};
+        # replace {\CMD}
+        $string =~ s/\{\\$command\}/$repl/g;
+        #
+        # replace \CMD, preceded by not-consumed non-backslash,
+        # and followed by (not consumed) whitespace or end-of-word
+        # or (for control symbols) right brace.
+        $string =~ s/(?<=[^\\])\\$command(?=\s|\b|\})/$repl/g;
+        #
+        # replace \CMD, followed similarly, but at beginning of whole
+        # string, which otherwise wouldn't be matched. Two separate
+        # regexps to avoid variable-length lookbehind.
+        $string =~ s/^\\$command(?=\s|\b\})/$repl/g;
     }
 
     $string;
@@ -41,10 +52,25 @@ sub _convert_commands {
 
 sub _convert_accents {
     my $string = shift;
-    $string =~ s/(\{\\(.)\{(\\?\w{1,2})\}\})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # {\"{a}}
-    $string =~ s/(\{\\(.)(\\?\w{1,2})\})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # {\"a}
-    $string =~ s/(\\(.)(\\?\w{1,2}))/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # \"a
-    $string =~ s/(\\(.)\{(\\?\w{1,2})\})/$LaTeX::ToUnicode::Tables::ACCENTS{$2}{$3} || $1/eg; # \"{a}
+    my %tbl = %LaTeX::ToUnicode::Tables::ACCENTS;
+    $string =~ s/(\{\\(.)\s*\{(\\?\w{1,2})\}\})/$tbl{$2}{$3} || $1/eg; #{\"{a}}
+    $string =~ s/(\{\\(.)\s*(\\?\w{1,2})\})/    $tbl{$2}{$3} || $1/eg; # {\"a}
+    $string =~ s/(\\(.)\s*(\\?\w{1,1}))/        $tbl{$2}{$3} || $1/eg; # \"a
+    $string =~ s/(\\(.)\s*\{(\\?\w{1,2})\})/    $tbl{$2}{$3} || $1/eg; # \"{a}
+    
+    # The argument is just one \w character for the \"a case, not two,
+    # because otherwise we might consume a following character that is
+    # not part of the accent, e.g., a backslash (\"a\'e).
+    # 
+    # Others can be two because of the \t tie-after accent. Even {\t oo} is ok.
+    # 
+    # Allow whitespace after the \CMD, e.g., "\c c". Even for the
+    # control symbols, it turns out spaces are ignored there (\" o),
+    # unlike the usual syntax.
+    # 
+    # Some non-word constituents would work, but in practice we hope
+    # everyone just uses letters.
+
     $string;
 }
 

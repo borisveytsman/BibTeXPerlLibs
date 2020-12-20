@@ -35,6 +35,7 @@ our %COMMANDS = (
     'LaTeX'      => 'LaTeX',
     'TeX'        => 'TeX',
     ' '          => ' ', # control space
+    "\t"         => ' ', # control space
     '-'          => '',  # hyphenation
     '/'          => '',  # italic correction
     'dag'        => "\x{2020}",
@@ -48,6 +49,21 @@ our %COMMANDS = (
     'omega'      => "\x{03C9}",
     'hookrightarrow' => "\x{2194}",
     'log'        => 'log',
+    #
+    ','             => '', # thin space
+    'thinspace'     => '',
+    'negthinspace'  => '',
+    #
+    ':'             => '', # medium space
+    'medspace'      => '',
+    'negmedspace'   => '',
+    #
+    ';'             => ' ', # thick space
+    'thickspace'    => ' ',
+    'negthickspace' => '',
+    #
+    'quad'	    => ' ',
+    'qquad'	    => ' ',
 );
 
 
