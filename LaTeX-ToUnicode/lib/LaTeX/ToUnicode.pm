@@ -12,8 +12,8 @@ our @ISA = qw(Exporter);
 our @EXPORT_OK = qw( convert );
 
 use utf8;
+use Encode;
 use LaTeX::ToUnicode::Tables;
-
 
 sub convert {
     my ( $string, %options ) = @_;
@@ -24,7 +24,81 @@ sub convert {
     $string = _convert_specials( $string );
     $string = _convert_ligatures( $string );
     $string = _convert_markups( $string );
-    $string =~ s/{(\w*)}/$1/g; # drop braces around text at end
+    
+    # After all this, $string contains \x{....} where translations have
+    # happened. Change those to the desired output format. Thus we
+    # assume that the Unicode \x{....}'s are not themselves involved in
+    # further translations, which is, so far, true.
+    # 
+    my $ofmt = $options{outputfmt};
+    my $ofmt_ok = 1;
+    if (! $ofmt || $ofmt eq "chars") {
+      # Convert our \x strings from Tables.pm to the binary characters.
+      # Presumably no more than four hex digits.
+      $string =~ s/\\x\{(.{1,4})\}/ pack('U*', hex($1))/eg;
+
+    } elsif ($ofmt eq "entities") {
+      # First convert the XML special characters that appeared in the
+      # input, e.g., from a TeX \&.
+      $string =~ s/&/&amp;/g;
+      $string =~ s/</&lt;/g;
+      $string =~ s/>/&gt;/g;
+      
+      # Our values in Tables.pm are simple ASCII strings \x{....},
+      # so we can replace them with hex entities with no trouble.
+      # Fortunately TeX does not have a standard \x control sequence.
+      $string =~ s/\\x\{(....)\}/&#x$1;/g;
+      
+      # The rest of the job is about binary Unicode characters in the
+      # input. We want to transform them into entities also. As always
+      # in Perl, there's more than one way to do it.
+      my $ret = "";
+      #
+      # decode_utf8 is described in https://perldoc.perl.org/Encode.
+      # Without the decode_utf8, all of these methods output each byte
+      # separately; apparently $string is a byte string at this point,
+      # not a Unicode string. I don't know why that is.
+      $ret = decode_utf8($string);
+      #
+      # Transform everything that's not printable ASCII or newline into
+      # entities.
+      $ret =~ s/([^ -~\n])/ sprintf("&#x%04x;", ord($1)) /eg;
+      # 
+      # This method leaves control characters as literal; doesn't matter
+      # for XML output, since control characters aren't allowed, but
+      # let's use the regexp method anyway.
+      #$ret = encode("ascii", decode_utf8($string), Encode::FB_XMLCREF);
+      # 
+      # The nice_string function from perluniintro also works.
+      # 
+      # This fails, just outputs numbers (that is, ord values):
+      # foreach my $c (unpack("U*", $ret)) {
+      # 
+      # Without the decode_utf8, outputs each byte separately.
+      # With the decode_utf8, works, but the above seems cleaner.
+      #foreach my $c (split(//, $ret)) {
+      #  if (ord($c) <= 31 || ord($c) >= 128) {
+      #    $ret .= sprintf("&#x%04x;", ord($c));
+      #  } else {
+      #    $ret .= $c;
+      #  }
+      #}
+      #
+      $string = $ret; # assigned from above.
+
+    } else {
+      $ofmt_ok = 0;
+      warn "LaTeX::ToUnicode::convert: unknown outputfmt value: $ofmt\n";
+      # leave \x{....}.
+    }
+    
+    if ($ofmt_ok && $string =~ /\\x\{/) {
+      warn "LaTeX::ToUnicode::convert: untranslated \\x remains: $string\n";
+      warn "LaTeX::ToUnicode::convert:   please report as bug.\n";
+    }
+    
+    # Drop braces around text at end, unless we have untranslated \x.
+    $string =~ s/{(\w*)}/$1/g if $ofmt_ok;
     $string;
 }
 
@@ -126,12 +200,15 @@ sub _convert_markups {
     # Remove \textMARKUP{...}, leaving just the {...}
     $string =~ s/\\text($markups)\b\s*//g;
 
+    # Similarly remove \MARKUPshape.
+    $string =~ s/\\($markups)shape\b\s*//g;
+
     # Remove braces and \command in: {... \command ...}
     $string =~ s/(\{[^{}]+)\\(?:$markups)\s+([^{}]+\})/$1$2/g;
-    #
+
     # Remove braces and \command in: {\command ...}
     $string =~ s/\{\\(?:$markups)\s+([^{}]*)\}/$1/g;
-    #
+
     # Remove: {\command
     # Although this will leave unmatched } chars behind, there's no
     # alternative without full parsing, since the bib entry will often
@@ -170,7 +247,9 @@ version 0.11
   
   # more generally:
   my $latexstr;
-  my $unistr = convert($latexstr);
+  my $unistr = convert($latexstr);  # get literal (binary) Unicode characters
+
+  my $entstr = convert($latexstr, outputfmt => "entities");  # get &#xUUUU;
 
 =head1 DESCRIPTION
 
@@ -179,13 +258,8 @@ into their Unicode equivalents. It translates commands for special characters
 or accents into their Unicode equivalents and removes formatting commands.
 It is not at all bulletproof or complete.
 
-This module converts values from BibTeX files into plain text. If your
-use case is different, YMMV.
-
-In contrast to L<TeX::Encode>, this module does not create HTML of any
-kind, including for HTML/XML metacharacters such as E<lt>, E<gt>, C<&>,
-which can appear literally in the output. Entities are other handling
-for these has to happen at another level, if need be.
+This module converts string fragments from BibTeX files into plain text.
+It is nowhere near a complete conversion system.
 
 =head1 FUNCTIONS
 
@@ -193,11 +267,10 @@ for these has to happen at another level, if need be.
 
 Convert the text in C<$string> that contains LaTeX into a plain(er)
 Unicode string. All escape sequences for accented and special characters
-(e.g., \i, \"a, ...) are converted. Basic formatting commands (e.g. {\it
-...}) are removed.
+(e.g., C<\i>, C<\"a>, ...) are converted. Some basic formatting commands
+(e.g., C<{\it ...}>) are removed.
 
-C<%options> allows you to enable additional translations. These keys are
-recognized:
+These keys are recognized in C<%options>:
 
 =over
 
@@ -206,6 +279,16 @@ recognized:
 If this option is set, the commands introduced by the package `german'
 (e.g. C<"a> eq C<ä>, note the missing backslash) are also
 handled.
+
+=item C<outputfmt> I<type>
+
+If I<type> is C<entities>, output C<&#xUUUU;> entities (for XML); in
+this case, also convert the E<lt>, E<gt>, C<&> metacharacters to entities.
+Non-ASCII characters in the input are also converted to entities, not
+only the translations from TeX.
+
+If I<type> is C<chars>, output literal (binary) Unicode characters, and
+do not change any metacharacters; this is the default.
 
 =back
 
