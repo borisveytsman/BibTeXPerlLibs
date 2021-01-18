@@ -1,16 +1,16 @@
 package LaTeX::ToUnicode::Tables;
 BEGIN {
-  $LaTeX::ToUnicode::Tables::VERSION = '0.11';
+  $LaTeX::ToUnicode::Tables::VERSION = '0.51';
 }
 use strict;
 use warnings;
 #ABSTRACT: Character tables for LaTeX::ToUnicode
 
-use utf8;
-
+use utf8; # just for the german support
 
 # Technically not all of these are ligatures, but close enough.
 # Order is important, so has to be a list, not a hash.
+# 
 our @LIGATURES = (
     "---" => '\x{2014}', # em dash
     "--"  => '\x{2013}', # en dash
@@ -21,52 +21,117 @@ our @LIGATURES = (
     "`"   => '\x{2018}', # left single
     "'"   => '\x{2019}', # right single
 );
-# test text: em---dash, en---dash, exc!`am, quest?`ion, ``ld, rd'', `ls, rs'.
+# test text: em---dash, en--dash, exc!`am, quest?`ion, ``ld, rd'', `ls, rs'.
+#
+# Some additional ligatures supported in T1 encoding, but we won't (from
+# tex-text.map):
+# U+002C U+002C	<> U+201E  ; ,, -> DOUBLE LOW-9 QUOTATION MARK
+# U+003C U+003C	<> U+00AB  ; << -> LEFT POINTING GUILLEMET
+# U+003E U+003E	<> U+00BB  ; >> -> RIGHT POINTING GUILLEMET
 
-# additions supported in T1 encoding, but we won't (from tex-text.map):
-# U+002C U+002C	<>	U+201E	; ,, -> DOUBLE LOW-9 QUOTATION MARK
-# U+003C U+003C	<>	U+00AB	; << -> LEFT POINTING GUILLEMET
-# U+003E U+003E	<>	U+00BB	; >> -> RIGHT POINTING GUILLEMET
-
-
-our @SPECIALS = ( qw( $ % & _ { } ), '#' );
-
-our %COMMANDS = (
-    'LaTeX'      => 'LaTeX',
-    'TeX'        => 'TeX',
-    ' '          => ' ', # control space
-    "\t"         => ' ', # control space
-    '-'          => '',  # hyphenation
-    '/'          => '',  # italic correction
-    'dag'        => '\x{2020}',
-    'ddag'       => '\x{2021}',
-    'bullet'     => '\x{2022}',
-    'dots'       => '\x{2026}',
-    'ldots'      => '\x{2026}',
-    'epsilon'    => '\x{03F5}',
-    'varepsilon' => '\x{03B5}',
-    'Omega'      => '\x{03A9}',
-    'omega'      => '\x{03C9}',
-    'hookrightarrow' => '\x{2194}',
-    'log'        => 'log',
-    #
-    ','             => '', # thin space
-    'thinspace'     => '',
-    'negthinspace'  => '',
-    #
-    ':'             => '', # medium space
-    'medspace'      => '',
-    'negmedspace'   => '',
-    #
-    ';'             => ' ', # thick space
-    'thickspace'    => ' ',
-    'negthickspace' => '',
-    #
-    'quad'	    => ' ',
-    'qquad'	    => ' ',
+#  for {\MARKUP(shape) ...} and \textMARKUP{...}, although not all
+# command names are defined for all markups. And there are more font
+# axes not included here: md, ulc, sw, ssc, etc. See ltfntcmd.dtx and
+# ltfssaxes.dtx if we ever want to try for completeness.
+# 
+our %MARKUPS = (
+    'bf'  => 'b',
+    'cal' => '',
+    'em'  => 'em',
+    'it'  => 'i',
+    'rm'  => '',
+    'sc'  => '',
+    'sf'  => '',
+    'sl'  => 'i',
+    'small' => '',
+    'tt'  => 'tt',
 );
 
+# More commands taking arguments that we want to handle.
+# 
+our %ARGUMENT_COMMANDS = (
+    'emph'	=> ['\textem{', '}'], # \textem doesn't exist, but is processed
+    'enquote'	=> ["`", "'"],
+    'path'	=> ['\texttt{', '}'], # ugh, might not be a braced argument
+);
 
+#  Non-alphabetic \COMMANDs, other than accents and special cases.
+# 
+our %CONTROL_SYMBOLS = (
+    ' '  => ' ', # control space
+    "\t" => ' ', # control space
+    "\n" => ' ', # control space
+    '@'  => '#', # end of sentence
+    '#'  => '#', # sharp sign
+    '$'  => '$', # dollar sign
+    '%'  => '%', # percent sign
+    '_'  => '_', # underscore
+    '\\' => ' ', # line break
+    '-'  => '',  # hyphenation point
+    '/'  => '',  # italic correction
+    '!'  => '',  # negative thin space
+    ','  => '',  # thin space
+    ':'  => '',  # medium space
+    ';'  => ' ', # thick space
+    '&'  => '\x{0026}', # ampersand
+    '{'  => '\x{007b}', # lbrace
+    '}'  => '\x{007d}', # rbrace
+);
+
+#  Alphabetic \COMMANDs that map to nothing. This is simply
+# interpolated into %CONTROL_WORDS (next), not used directly, so we
+# redundantly specify the '' on every line.
+# 
+our %CONTROL_WORDS_EMPTY = (
+    'thinspace'     => '',
+    'begingroup'    => '',
+    'bgroup'        => '',
+    'checkcomma'    => '',
+    'cite'          => '',
+    'clearpage'     => '',
+    'doi'           => '',
+    'egroup'        => '',
+    'endgroup'      => '',
+    'hbox'          => '',
+    'ignorespaces'  => '',
+    'medspace'      => '',
+    'negmedspace'   => '',
+    'negthickspace' => '',
+    'negthinspace'  => '',
+    'newblock'      => '',
+    'newpage'       => '',
+    'nolinkurl'     => '',
+    'urlprefix'     => '',
+);
+
+#  Alphabetic commands, that expand to nothing (above) and to
+# something (below).
+#
+our %CONTROL_WORDS = (
+    %CONTROL_WORDS_EMPTY,
+    'LaTeX'          => 'LaTeX',
+    'Omega'          => '\x{03A9}',
+    'TeX'            => 'TeX',
+    'bullet'         => '\x{2022}',
+    'dag'            => '\x{2020}',
+    'ddag'           => '\x{2021}',
+    'dots'           => '\x{2026}',
+    'epsilon'        => '\x{03F5}',
+    'hookrightarrow' => '\x{2194}',
+    'ldots'          => '\x{2026}',
+    'log'            => 'log',
+    'omega'          => '\x{03C9}',
+    'par'            => "\n\n",
+    'qquad'          => ' ', # 2em space
+    'quad'           => ' ', # em space
+    'textbackslash'  => '\x{005c}',
+    'thickspace'     => ' ',
+    'varepsilon'     => '\x{03B5}',
+);
+
+#  Control words (not symbols) that generate various non-English
+# letters and symbols. Lots more could be added.
+# 
 our %SYMBOLS = ( # Table 3.2 in Lamport, plus more
     'AA' => '\x{00C5}', # A with ring
     'aa' => '\x{00E5}',
@@ -92,8 +157,9 @@ our %SYMBOLS = ( # Table 3.2 in Lamport, plus more
     'TM' => '\x{2122}', # trade mark sign
 );
 
-
-our %ACCENTS = (
+#  Accent commands that are not alphabetic.
+# 
+our %ACCENT_SYMBOLS = (
   "\"" => {		# with diaresis
     A => '\x{00C4}',
     E => '\x{00CB}',
@@ -157,6 +223,58 @@ our %ACCENTS = (
     y => '\x{00FD}',
     z => '\x{017A}',
   },
+  "^" => {		# with circumflex
+    A => '\x{00C2}',
+    C => '\x{0108}',
+    E => '\x{00CA}',
+    G => '\x{011C}',
+    H => '\x{0124}',
+    I => '\x{00CE}',
+    J => '\x{0134}',
+    O => '\x{00D4}',
+    S => '\x{015C}',
+    U => '\x{00DB}',
+    W => '\x{0174}',
+    Y => '\x{0176}',
+    Z => '\x{1E90}',
+    "\\I" => '\x{00CE}',
+    "\\J" => '\x{0134}',
+    "\\i" => '\x{00EE}',
+    "\\j" => '\x{0135}',
+    a => '\x{00E2}',
+    c => '\x{0109}',
+    e => '\x{00EA}',
+    g => '\x{011D}',
+    h => '\x{0125}',
+    i => '\x{00EE}',
+    j => '\x{0135}',
+    o => '\x{00F4}',
+    s => '\x{015D}',
+    u => '\x{00FB}',
+    w => '\x{0175}',
+    y => '\x{0177}',
+    z => '\x{1E91}',
+  },
+  "`" => {		# with grave
+    A => '\x{00C0}',
+    E => '\x{00C8}',
+    I => '\x{00CC}',
+    N => '\x{01F8}',
+    O => '\x{00D2}',
+    U => '\x{00D9}',
+    W => '\x{1E80}',
+    Y => '\x{1Ef2}',
+    "\\I" => '\x{00CC}',
+    "\\i" => '\x{00EC}',
+    a => '\x{00E0}',
+    e => '\x{00E8}',
+    i => '\x{00EC}',
+    n => '\x{01F9}',
+    o => '\x{00F2}',
+    u => '\x{00F9}',
+    w => '\x{1E81}',
+    y => '\x{1EF3}',
+  },
   "." => {		# with dot above
     A => '\x{0226}',
     B => '\x{1E02}',
@@ -219,63 +337,36 @@ our %ACCENTS = (
     u => '\x{016B}',
     y => '\x{0233}',
   },
+  "~" => {		# with tilde
+    A => '\x{00C3}',
+    E => '\x{1EBC}',
+    I => '\x{0128}',
+    N => '\x{00D1}',
+    O => '\x{00D5}',
+    U => '\x{0168}',
+    V => '\x{1E7C}',
+    Y => '\x{1EF8}',
+    "\\I" => '\x{0128}',
+    "\\i" => '\x{0129}',
+    a => '\x{00E3}',
+    e => '\x{1EBD}',
+    i => '\x{0129}',
+    n => '\x{00F1}',
+    o => '\x{00F5}',
+    u => '\x{0169}',
+    v => '\x{1E7D}',
+    y => '\x{1EF9}',
+  },
+);
+
+#  Accent commands that are alphabetic.
+# 
+our %ACCENT_LETTERS = (
   "H" => {		# with double acute
     O => '\x{0150}',
     U => '\x{0170}',
     o => '\x{0151}',
     u => '\x{0171}',
-  },
-  "^" => {		# with circumflex
-    A => '\x{00C2}',
-    C => '\x{0108}',
-    E => '\x{00CA}',
-    G => '\x{011C}',
-    H => '\x{0124}',
-    I => '\x{00CE}',
-    J => '\x{0134}',
-    O => '\x{00D4}',
-    S => '\x{015C}',
-    U => '\x{00DB}',
-    W => '\x{0174}',
-    Y => '\x{0176}',
-    Z => '\x{1E90}',
-    "\\I" => '\x{00CE}',
-    "\\J" => '\x{0134}',
-    "\\i" => '\x{00EE}',
-    "\\j" => '\x{0135}',
-    a => '\x{00E2}',
-    c => '\x{0109}',
-    e => '\x{00EA}',
-    g => '\x{011D}',
-    h => '\x{0125}',
-    i => '\x{00EE}',
-    j => '\x{0135}',
-    o => '\x{00F4}',
-    s => '\x{015D}',
-    u => '\x{00FB}',
-    w => '\x{0175}',
-    y => '\x{0177}',
-    z => '\x{1E91}',
-  },
-  "`" => {		# with grave
-    A => '\x{00C0}',
-    E => '\x{00C8}',
-    I => '\x{00CC}',
-    N => '\x{01F8}',
-    O => '\x{00D2}',
-    U => '\x{00D9}',
-    W => '\x{1E80}',
-    Y => '\x{1Ef2}',
-    "\\I" => '\x{00CC}',
-    "\\i" => '\x{00EC}',
-    a => '\x{00E0}',
-    e => '\x{00E8}',
-    i => '\x{00EC}',
-    n => '\x{01F9}',
-    o => '\x{00F2}',
-    u => '\x{00F9}',
-    w => '\x{1E81}',
-    y => '\x{1EF3}',
   },
   "c" => {		# with cedilla
     C => '\x{00C7}',
@@ -437,29 +528,9 @@ our %ACCENTS = (
     u => '\x{01D4}',
     z => '\x{017E}',
   },
-  "~" => {		# with tilde
-    A => '\x{00C3}',
-    E => '\x{1EBC}',
-    I => '\x{0128}',
-    N => '\x{00D1}',
-    O => '\x{00D5}',
-    U => '\x{0168}',
-    V => '\x{1E7C}',
-    Y => '\x{1EF8}',
-    "\\I" => '\x{0128}',
-    "\\i" => '\x{0129}',
-    a => '\x{00E3}',
-    e => '\x{1EBD}',
-    i => '\x{0129}',
-    n => '\x{00F1}',
-    o => '\x{00F5}',
-    u => '\x{0169}',
-    v => '\x{1E7D}',
-    y => '\x{1EF9}',
-  },
 );
 
-
+# 
 our %GERMAN = ( # for package `german'/`ngerman'
     '"a'    => 'ä',
     '"A'    => 'Ä',
@@ -492,17 +563,12 @@ our %GERMAN = ( # for package `german'/`ngerman'
     '\dq'   => '"',
 );
 
-
-# for {\MARKUP ...} and \textMARKUP{...}
-our @MARKUPS = ( qw( bf cal em it rm sc sl small tt ) );
-
-
 1;
 
 __END__
 =pod
 
-=encoding utf-8
+=encoding UTF-8
 
 =head1 NAME
 
@@ -510,7 +576,7 @@ LaTeX::ToUnicode::Tables - Character tables for LaTeX::ToUnicode
 
 =head1 VERSION
 
-version 0.11
+version 0.51
 
 =head1 CONSTANTS
 
@@ -519,29 +585,70 @@ version 0.11
 Standard TeX character sequences (not \commands) which need to be
 replaced: C<---> with U+2014 (em dash), etc.  Includes: em dash, en
 dash, inverted exclamation, inverted question, left double quote, right
-double quote, left single quote, right single quote.
+double quote, left single quote, right single quote. They are replaced
+in that order.
 
-=head2 @SPECIALS
+=head2 %MARKUPS
 
-Most of TeX's metacharacters, i.e., those for which C<\I<char>> typesets
-I<char>: C<$ % & _ { } #>. TeX has other special characters which are not
-included here, for instance: C<\ ^ ~>.
+Hash where keys are the names of formatting commands like C<\tt>,
+without the backslash, namely: C<bf cal em it rm sc sf sl small tt>. Values
+are the obvious HTML equivalent where one exists, given as the tag name
+without the angle brackets: C<b em i tt>. Otherwise the value is the empty
+string.
 
-=head2 %COMMANDS
+=head2 %ARGUMENT_COMMANDS
 
-Names of argument-less commands like C<\LaTeX> as keys.
-Values are the replacements.
+Hash where keys are the names of TeX commands taking arguments that we
+handle, without the backslash, such as C<enquote>. Each value is a
+reference to a list of two strings, the first being the text to insert
+before the argument, the second being the text to insert after. For
+example, for C<enquote> the value is C<["`", "'"]>. The inserted text is
+subject to further replacements.
+
+Only three such commands are currently handled: C<\emph>, C<\enquote>,
+and C<\path>.
+
+=head2 %CONTROL_SYMBOLS
+
+A hash where the keys are non-alphabetic C<\command>s (without the
+backslash), other than accents and special cases. These don't take
+arguments. Although some of these have Unicode equivalents, such as the
+C<\,> thin space, it seems better to keep the output as simple as
+possible; spacing tweaks in the TeX aren't usually desirable in plain
+text or HTML.
+
+The values are single-quoted strings C<'\x{...}'>, not double-quoted
+literal characters <"\x{...}">, to ease future parsing of the
+TeX/text/HTML.
+
+This hash is necessary because TeX's parsing rules for control symbols
+are different from control words: no space or other token is needed to
+terminate control symbols.
+
+=head2 %CONTROL_WORDS
+
+Keys are names of argument-less commands, such as C<\LaTeX> (without the
+backslash). Values are the replacements, often the empty string.
 
 =head2 %SYMBOLS
 
-Predefined escape commands for extended characters.
+Keys are the commands for extended characters, such as C<\AA> (without
+the backslash.)
 
-=head2 %ACCENTS
+=head2 %ACCENT_SYMBOLS
 
-Two-level hash of accented characters like C<\'{a}>. The keys of this hash
-are the accent symbols, e.g C<`>, C<"> or C<'>. The corresponding values are
-references to hashes, where the keys are the base letters and the values are
-the decoded characters. As an example, C<< $ACCENTS{'`'}->{a} eq 'à' >>.
+Two-level hash of accented characters like C<\'{a}>. The keys of this
+hash are the accent symbols (without the backslash), such as C<`> and
+C<'>. The corresponding values are hash references where the keys are
+the base letters and the values are single-quoted C<'\x{....}'> strings.
+
+=head2 %ACCENT_LETTERS
+
+Same as %ACCENT_SYMBOLS, except the keys are accents that are
+alphabetic, such as C<\c> (without the backslash as always).
+
+As with control sequences, it's necessary to distinguish symbols and
+alphabetic commands because of the different parsing rules.
 
 =head2 %GERMAN
 
@@ -551,22 +658,19 @@ or C<"`"> (german left quote). Note the missing backslash.
 
 The keys of this hash are the literal character sequences.
 
-=head2 @MARKUPS
-
-Command names of formatting commands like C<\tt>, namely:
-C<bf cal em it rm sc sl small tt>.
-
 =head1 AUTHOR
 
-Gerhard Gossen <gerhard.gossen@googlemail.com> and
-Boris Veytsman <boris@varphi.com>
+Gerhard Gossen <gerhard.gossen@googlemail.com>,
+Boris Veytsman <boris@varphi.com>,
+Karl Berry <karl@freefriends.org>
+
 L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010-2015 by Gerhard Gossen and Boris Veytsman
+Copyright 2010-2021 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
+the same terms as the Perl5 programming language system itself.
 
 =cut

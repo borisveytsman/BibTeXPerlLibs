@@ -1,0 +1,25 @@
+#
+# This is Makefile for TDS-compliant TeX distributions
+# Written by Boris Veytsman, boris@varphi.com
+#
+# This file is in public domain
+#
+PREFIX = /usr/local
+
+LIBDIR = $(PREFIX)/scripts/bibtexperllibs
+
+DOCDIR = $(PREFIX)/doc/bibtex/bibtexperllibs
+
+all:  
+
+
+
+install:  
+	mkdir -p $(LIBDIR)
+	cp -r lib/* $(LIBDIR)
+	mkdir -p $(DOCDIR)
+	cp -r man/man3/* $(DOCDIR)
+
+clean:
+
+distclean: clean
