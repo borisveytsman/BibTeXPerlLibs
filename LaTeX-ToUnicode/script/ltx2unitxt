@@ -40,7 +40,7 @@ exit(main());
 sub main {
     init();
 
-    # qqq by paragraph?
+    # by paragraph?
     while (<>) {
         print OUT (convert($_));
     }

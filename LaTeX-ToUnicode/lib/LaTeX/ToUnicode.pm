@@ -519,11 +519,17 @@ meanings for characters and control sequences; macros in the input are
 not considered.
 
 The aim for all the output is utter simplicity and minimalism, not the
-fullest possible translation. For example, although Unicode has a code
-point for a thin space, the LaTeX C<\thinspace> (etc.) command is
+most faithful translation possible. For example, although Unicode has a
+code point for a thin space, the LaTeX C<\thinspace> (etc.) command is
 translated to the empty string; such spacing refinements in the TeX
 output are, in our experience, generally not desired in the output from
 this tool.
+
+As another example, TeX C<%> comments are not removed, even on lines by
+themselves, because they may be inside verbatim blocks, and we don't
+attempt to keep any such context. In practice, TeX comments are rare in
+the text fragments intended to be handled, so removing them in advance
+is not a great burden.
 
 As another example, LaTeX ties, C<~> characters, are replaced with
 normal spaces (exception: unless they follow a C</> character or at the
@@ -596,8 +602,13 @@ The value must be a function that takes two arguments and returns a
 string. The first argument is the incoming string (may be multiple
 lines), and the second argument is a hash reference of options, just as
 passed to this C<convert> function. Thus the hook can detect whether
-html is needed. As an example, here is the hook function for TUGboat,
-greatly abridged:
+html is needed.
+
+Any substitutions that result in Unicode code points must use
+C<\\x{nnnn}> on the right hand side: that's two backslashes and a
+four-digit hex number.
+
+As an example, here is the hook function for TUGboat, greatly abridged:
 
   sub LaTeX_ToUnicode_convert_hook {
     my ($string,$options) = @_;
@@ -637,10 +648,10 @@ greatly abridged:
     return $string;
   }
 
-See the file C<ltx2crossrefxml-tugboat.cfg> in the TUGboat source
+For the full definition (and a lot more),
+see the file C<ltx2crossrefxml-tugboat.cfg> in the TUGboat source
 repository at
-<https://github.com/TeXUsersGroup/tugboat/tree/trunk/capsules/crossref>
-for the full definition (and a lot more).
+<https://github.com/TeXUsersGroup/tugboat/tree/trunk/capsules/crossref>.
 
 The hook function is specified in the C<convert()> call like this:
 

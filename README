@@ -19,7 +19,7 @@ crossrefware package (which is also the reason for continued development).
 
 Changes:
 
-  version 1.7 2021-01-18 LaTeX::ToUnicode 0.51 for still more
+  version 1.7 2021-01-20 LaTeX::ToUnicode 0.51 for still more
 		ltx2crossrefxml support, including simple html output.
 		(No changes to BibTeX::Parser.)
 
