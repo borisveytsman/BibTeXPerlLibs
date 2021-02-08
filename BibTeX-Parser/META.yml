@@ -18,6 +18,6 @@ requires:
   File::Spec: 0
   IO::File: 0
   IO::String: 0
-  LaTeX::ToUnicode: 0.02
+  LaTeX::ToUnicode: 0.11
   Test::More: 0
-version: 1.02
+version: 1.03
