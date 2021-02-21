@@ -9,7 +9,7 @@ use strict;
 use BibTeX::Parser::Entry;
 
 
-my $re_namechar = qr/[a-zA-Z0-9\!\$\&\*\+\-\.\/\:\;\<\>\?\[\]\^\_\`\|]/o;
+my $re_namechar = qr/[a-zA-Z0-9\!\$\&\*\+\-\.\/\:\;\<\>\?\[\]\^\_\`\|\']/o;
 my $re_name     = qr/$re_namechar+/o;
 
 
@@ -50,6 +50,7 @@ sub _parse_next {
         until (/@/m) {
             my $line = $self->{fh}->getline;
             return 0 unless defined $line;
+            $line =~ s/^%.*$//;
             $_ .= $line;
         }
 
