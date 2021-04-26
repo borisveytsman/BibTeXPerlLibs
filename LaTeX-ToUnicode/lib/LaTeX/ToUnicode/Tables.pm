@@ -29,10 +29,11 @@ our @LIGATURES = (
 # U+003C U+003C	<> U+00AB  ; << -> LEFT POINTING GUILLEMET
 # U+003E U+003E	<> U+00BB  ; >> -> RIGHT POINTING GUILLEMET
 
-#  for {\MARKUP(shape) ...} and \textMARKUP{...}, although not all
-# command names are defined for all markups. And there are more font
-# axes not included here: md, ulc, sw, ssc, etc. See ltfntcmd.dtx and
-# ltfssaxes.dtx if we ever want to try for completeness.
+#  for {\MARKUP(shape) ...} and \textMARKUP{...}; although not all
+# command names are defined in LaTeX for all markups, we translate them
+# anyway. Also, LaTeX has more font axes not included here: md, ulc, sw,
+# ssc, etc. See ltfntcmd.dtx and ltfssaxes.dtx if we ever want to try
+# for completeness.
 # 
 our %MARKUPS = (
     'bf'  => 'b',
@@ -109,9 +110,17 @@ our %CONTROL_WORDS_EMPTY = (
 #
 our %CONTROL_WORDS = (
     %CONTROL_WORDS_EMPTY,
+    'BibLaTeX'       => 'BibLaTeX',
+    'BibTeX'         => 'BibTeX',
     'LaTeX'          => 'LaTeX',
+    'LuaLaTeX'       => 'LuaLaTeX',
+    'LuaTeX'         => 'LuaTeX',
+    'MF'             => 'Metafont',
+    'MP'             => 'MetaPost',
     'Omega'          => '\x{03A9}',
     'TeX'            => 'TeX',
+    'XeLaTeX'        => 'XeLaTeX',
+    'XeTeX'          => 'XeTeX',
     'bullet'         => '\x{2022}',
     'dag'            => '\x{2020}',
     'ddag'           => '\x{2021}',

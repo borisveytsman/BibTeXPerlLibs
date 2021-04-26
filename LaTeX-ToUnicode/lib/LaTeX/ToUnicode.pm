@@ -28,7 +28,7 @@ sub _debug { warn @_ if $debug; }
 # The main conversion function.
 # 
 sub convert {
-    my ( $string, %options ) = @_;
+    my ($string, %options) = @_;
     #warn debug_hash_as_string("starting with: $string", %options);
 
     # First, remove leading and trailing horizontal whitespace
@@ -61,38 +61,43 @@ sub convert {
     # Perl string \x{nnnn} for Unicode character nnnn; those Perl braces
     # for the \x will confuse further parsing of the TeX.
     # 
-    $string = _convert_commands_with_arg( $string );
+    $string = _convert_commands_with_arg($string);
     
     # Convert markups (\texttt, etc.); they have the same brace-parsing issue.
-    $string = _convert_markups( $string, \%options );
+    $string = _convert_markups($string, \%options);
     
     # And urls, a special case of commands with arguments.
-    $string = _convert_urls( $string, \%options );
+    $string = _convert_urls($string, \%options);
 
-    $string = _convert_control_words( $string );
+    $string = _convert_control_words($string);
     _debug("after control words: $string");
 
-    $string = _convert_control_symbols( $string );
+    $string = _convert_control_symbols($string);
     _debug("after control symbols: $string");
 
-    $string = _convert_accents( $string );
-    $string = _convert_german( $string ) if $options{german};
-    $string = _convert_symbols( $string );
-    $string = _convert_ligatures( $string );
+    $string = _convert_accents($string);
+    $string = _convert_german($string) if $options{german};
+    $string = _convert_symbols($string);
+    $string = _convert_ligatures($string);
     
     # Let's handle ties here, after all the other conversions, since
     # they don't fit well with any of the tables.
     # 
     # /~, or ~ at the beginning of a line, is probably part of a url or
     # path, not a tie. Otherwise, consider it a space, since a no-break
-    # spot in TeX is likely not desired in text or HTML.
+    # spot in TeX is likely fine to break in text or HTML.
     # 
     $string =~ s,([^/])~,$1 ,g;
     
-    # After all the conversions, $string contains \x{....} where
-    # translations have happened. Change those to the desired output
-    # format. Thus we assume that the Unicode \x{....}'s are not
-    # themselves involved in further translations, which is, so far, true.
+    # Remove kerns. Clearly needs generalizing somehow,
+    # but not clear how.
+    $string =~ s!\\kern${endcw}[-+]?[0-9., ]+[a-z][a-z]\s*!!;
+
+    # After all the conversions, $string contains \x{....} constructs
+    # (Perl Unicode characters) where translations have happened. Change
+    # those to the desired output format. Thus we assume that the
+    # Unicode \x{....}'s are not themselves involved in further
+    # translations, which is, so far, true.
     # 
     if (! $options{entities}) {
       # Convert our \x strings from Tables.pm to the binary characters.
@@ -172,10 +177,10 @@ sub convert {
     $string;
 }
 
-#  Convert commands that take a single argument. The table defines
-# text we're supposed to insert before and after the argument. We let
-# future processing handle conversion of both the inserted text and the
-# argument.
+#  Convert commands that take a single braced argument. The table
+# defines text we're supposed to insert before and after the argument.
+# We let future processing handle conversion of both the inserted text
+# and the argument.
 # 
 sub _convert_commands_with_arg {
     my $string = shift;
@@ -374,7 +379,7 @@ sub _convert_markups {
     # Ok, we'll "convert" to plain text by removing the markup commands.
 
     # we can do all markup commands at once.
-    my $markups = join( '|', keys %LaTeX::ToUnicode::Tables::MARKUPS );
+    my $markups = join('|', keys %LaTeX::ToUnicode::Tables::MARKUPS);
     
     # Remove \textMARKUP{...}, leaving just the {...}
     $string =~ s/\\text($markups)$endcw//g;
