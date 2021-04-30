@@ -613,7 +613,7 @@ Any substitutions that result in Unicode code points must use
 C<\\x{nnnn}> on the right hand side: that's two backslashes and a
 four-digit hex number.
 
-As an example, here is the hook function for TUGboat, greatly abridged:
+As an example, here is a skeleton of the hook function for TUGboat:
 
   sub LaTeX_ToUnicode_convert_hook {
     my ($string,$options) = @_;

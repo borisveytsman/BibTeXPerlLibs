@@ -102,6 +102,7 @@ our %CONTROL_WORDS_EMPTY = (
     'newblock'      => '',
     'newpage'       => '',
     'nolinkurl'     => '',
+    'protect'       => '',
     'urlprefix'     => '',
 );
 
