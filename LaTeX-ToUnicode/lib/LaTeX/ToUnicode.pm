@@ -191,6 +191,7 @@ sub _convert_commands_with_arg {
         my $rht = $repl->[1];
         # \cmd{foo} -> LFT foo RHT
         $string =~ s/\\$cmd${endcw}\{(.*?)\}/$lft$1$rht/g;
+        #warn "replaced arg $cmd, yielding $string\n";
     }
     
     $string;
@@ -221,7 +222,29 @@ sub _convert_urls {
         $string =~ s/\\url$endcw\{([^}]*)\}/$1/g;
         #
         # \href{URL}{TEXT} -> TEXT (URL)
-        $string =~ s/\\href$endcw\{([^}]*)\}\s*\{([^}]*)\}/$2 ($1)/g;
+        # but, as a special case, if URL ends with TEXT, just output URL,
+        # as in:
+        #   \href{https://doi.org/10/fjzzc8}{10/fjzzc8}
+        # ->
+        #   https://doi.org/10/fjzzc8
+        # 
+        # Yet more specialness: the TEXT might have extra braces, as in
+        #   \href{https://doi.org/10/fjzzc8}{{10/fjzzc8}}
+        # left over from previous markup commands (\path) which got
+        # removed.  We just want to accept and ignore such extra braces,
+        # hence the \{+ ... \}+ in recognizing TEXT.
+        # 
+#warn "txt url: starting with $string\n";
+        if ($string =~ m/\\href$endcw\{([^}]*)\}\s*\{+([^}]*)\}+/) {
+          my $url = $1;
+          my $text = $2;
+#warn "   url: $url\n";
+#warn "  text: $text\n";
+          my $repl = ($url =~ m!$text$!) ? $url : "$text ($url)";
+#warn "  repl: $repl\n";
+          $string =~ s/\\href$endcw\{([^}]*)\}\s*\{+([^}]*)\}+/$repl/;
+#warn "  str:  $string\n";
+        }
     }
     
     $string;

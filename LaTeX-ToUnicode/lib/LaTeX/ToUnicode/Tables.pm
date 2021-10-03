@@ -95,6 +95,7 @@ our %CONTROL_WORDS_EMPTY = (
     'endgroup'      => '',
     'hbox'          => '',
     'ignorespaces'  => '',
+    'mbox'          => '',
     'medspace'      => '',
     'negmedspace'   => '',
     'negthickspace' => '',
@@ -102,6 +103,7 @@ our %CONTROL_WORDS_EMPTY = (
     'newblock'      => '',
     'newpage'       => '',
     'nolinkurl'     => '',
+    'oldstylenums'  => '',
     'protect'       => '',
     'urlprefix'     => '',
 );
