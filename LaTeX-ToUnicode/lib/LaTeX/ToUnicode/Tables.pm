@@ -105,6 +105,7 @@ our %CONTROL_WORDS_EMPTY = (
     'nolinkurl'     => '',
     'oldstylenums'  => '',
     'protect'       => '',
+    'unskip'        => '',
     'urlprefix'     => '',
 );
 
@@ -136,7 +137,12 @@ our %CONTROL_WORDS = (
     'par'            => "\n\n",
     'qquad'          => ' ', # 2em space
     'quad'           => ' ', # em space
-    'textbackslash'  => '\x{005c}',
+    'textbackslash'  => '\x{005C}',
+    'textbraceleft'  => '\x{007B}',
+    'textbraceright' => '\x{007D}',
+    'textgreater'    => '\x{003E}',
+    'textless'       => '\x{003C}',
+    'textquotedbl'   => '"',
     'thickspace'     => ' ',
     'varepsilon'     => '\x{03B5}',
 );

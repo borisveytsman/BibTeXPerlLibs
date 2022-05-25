@@ -62,12 +62,15 @@ sub convert {
     # for the \x will confuse further parsing of the TeX.
     # 
     $string = _convert_commands_with_arg($string);
+    _debug("after commands with arg: $string");
     
     # Convert markups (\texttt, etc.); they have the same brace-parsing issue.
     $string = _convert_markups($string, \%options);
+    _debug("after markups: $string");
     
     # And urls, a special case of commands with arguments.
     $string = _convert_urls($string, \%options);
+    _debug("after urls: $string");
 
     $string = _convert_control_words($string);
     _debug("after control words: $string");
@@ -231,7 +234,7 @@ sub _convert_urls {
         # Yet more specialness: the TEXT might have extra braces, as in
         #   \href{https://doi.org/10/fjzzc8}{{10/fjzzc8}}
         # left over from previous markup commands (\path) which got
-        # removed.  We just want to accept and ignore such extra braces,
+        # removed.  We want to accept and ignore such extra braces,
         # hence the \{+ ... \}+ in recognizing TEXT.
         # 
 #warn "txt url: starting with $string\n";
@@ -534,30 +537,30 @@ version 0.51
 =head1 DESCRIPTION
 
 This module provides a method to convert LaTeX markups for accents etc.
-into their Unicode equivalents. It translates commands for special
-characters or accents into their Unicode equivalents and removes
-formatting commands. It is not at all bulletproof or complete.
+into their Unicode equivalents. It translates some commands for special
+characters or accents into their Unicode (or HTML) equivalents and
+removes formatting commands. It is not at all bulletproof or complete.
 
 This module is intended to convert fragments of LaTeX source, such as
 bibliography entries and abstracts, into plain text (or, optionally,
-simplistic html). It is not a document conversion system. Math, tables,
+simplistic HTML). It is not a document conversion system. Math, tables,
 figures, sectioning, etc., are not handled in any way, and mostly left
 in their TeX form in the output. The translations assume standard LaTeX
 meanings for characters and control sequences; macros in the input are
 not considered.
 
-The aim for all the output is utter simplicity and minimalism, not the
-most faithful translation possible. For example, although Unicode has a
-code point for a thin space, the LaTeX C<\thinspace> (etc.) command is
-translated to the empty string; such spacing refinements in the TeX
-output are, in our experience, generally not desired in the output from
+The aim for all the output is utter simplicity and minimalism, not
+faithful translation. For example, although Unicode has a code point for
+a thin space, the LaTeX C<\thinspace> (etc.) command is translated to
+the empty string; such spacing refinements desirable in the TeX output
+are, in our experience, generally not desired in the HTML output from
 this tool.
 
 As another example, TeX C<%> comments are not removed, even on lines by
 themselves, because they may be inside verbatim blocks, and we don't
 attempt to keep any such context. In practice, TeX comments are rare in
 the text fragments intended to be handled, so removing them in advance
-is not a great burden.
+has not been a great burden.
 
 As another example, LaTeX ties, C<~> characters, are replaced with
 normal spaces (exception: unless they follow a C</> character or at the
@@ -566,7 +569,7 @@ pathname), rather than a no-break space character, because in our
 experience most ties intended for the TeX output would just cause
 trouble in plain text or HTML.
 
-Regarding normal whitespace, all leading and trailing horizontal
+Regarding normal whitespace: all leading and trailing horizontal
 whitespace (that is, SPC and TAB) is removed. All internal horizontal
 whitespace sequences are collapsed to a single space.
 
@@ -628,9 +631,17 @@ random commands, C<\enquote> and C<\path>, because they are needed.
 
 The value must be a function that takes two arguments and returns a
 string. The first argument is the incoming string (may be multiple
-lines), and the second argument is a hash reference of options, just as
-passed to this C<convert> function. Thus the hook can detect whether
-html is needed.
+lines), and the second argument is a hash reference of options, exactly
+what was passed to this C<convert> function. Thus the hook can detect
+whether html is needed.
+
+The hook is called (almost) right away, before any of the other
+conversions have taken place. That way the hook can make use of the
+predefined conversions instead of repeating them. The only changes made
+to the input string before the hook is called are trivial: leading and
+trailing whitespace (space and tab) on each line are removed, and, for
+HTML output, incoming ampersand, less-than, and greater-than characters
+are replaced with their entities.
 
 Any substitutions that result in Unicode code points must use
 C<\\x{nnnn}> on the right hand side: that's two backslashes and a
@@ -658,23 +669,31 @@ As an example, here is a skeleton of the hook function for TUGboat:
     # ignore \begin{abstract} and \end{abstract} commands.
     $string =~ s,\\(begin|end)$endcw\{abstract\}\s*,,g;
 
-    # Output for our url abbreviations depends on whether we're generating
-    # plain text or HTML.
+    # Output for our url abbreviations, and other commands, depends on
+    # whether we're generating plain text or HTML.
     if ($options->{html}) {
         # HTML.
         # \tbsurl{URLBASE} -> <a href="https://URLBASE">URLBASE</a>
         $string =~ s,\\tbsurl$endcw\{([^}]*)\}
                     ,<a href="https://$1">$1</a>,gx;
         ...
+        $string =~ s/\\CandT$endcw/\\textsl{Computers \& Typesetting}/g;
+
     } else {
         # for plain text, we can just prepend the protocol://.
         $string =~ s,\\tbsurl$endcw,https://,g;
         ...
+        $string =~ s/\\CandT$endcw/Computers \& Typesetting/g;
     }
     ...
     
     return $string;
   }
+
+As shown here for C<\CandT> (an abbreviation macro defined in the
+TUGboat style files), if markup is desired in the output, the
+substitutions must be different for HTML and plain text. (Otherwise, the
+desired HTML markup is transliterated as if it were plain text.)
 
 For the full definition (and a lot more),
 see the file C<ltx2crossrefxml-tugboat.cfg> in the TUGboat source
@@ -717,7 +736,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2021 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2022 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.
