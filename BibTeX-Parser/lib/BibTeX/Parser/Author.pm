@@ -258,15 +258,31 @@ sub _get_single_author_from_tokens {
 
 
 
-
+# The goal is to return a name in form
+# von Last, Jr, First
+# where any of the parts except Last may be empty.
+# 
 sub to_string {
 	my $self = shift;
 
-	if ($self->jr) {
-		return ($self->von ? $self->von . " " : '') . " " . $self->last . ", " . $self->jr . ", " . $self->first;
-	} else {
-		return ($self->von ? $self->von . " " : '') . $self->last . ($self->first ? ", " . $self->first : '');
-	}
+        my $last = $self->last; # assume always present
+	my $first = $self->first ? (", " . $self->first) : ''; # ", first"
+	my $von = $self->von ? ($self->von . " ") : '';        # "von "
+	my $jr = $self->jr ? (", " . $self->jr ) : '';         # ", jr"
+	#
+        my $ret = "${von}${last}${jr}${first}";
+	#warn "returning name: $ret\n";
+	return $ret;
+
+# original code, which introduced a spurious space with a von part.
+# https://github.com/borisveytsman/crossrefware/issues/11
+# 
+# if ($self->jr) {
+#  return () . " " . $self->last . ", " . $self->jr . ", " . $self->first;
+# } else {
+#  return ($self->von ? $self->von . " " : '') . $self->last . ($self->first ? ", " . $self->first : '');
+# }
+#
 }
 
 
