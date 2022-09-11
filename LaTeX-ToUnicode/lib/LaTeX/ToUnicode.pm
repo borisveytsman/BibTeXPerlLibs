@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package LaTeX::ToUnicode;
 BEGIN {
-  $LaTeX::ToUnicode::VERSION = '0.51';
+  $LaTeX::ToUnicode::VERSION = '0.52';
 }
 #ABSTRACT: Convert LaTeX commands to Unicode (simplistically)
 
@@ -92,9 +92,9 @@ sub convert {
     # 
     $string =~ s,([^/])~,$1 ,g;
     
-    # Remove kerns. Clearly needs generalizing somehow,
-    # but not clear how.
-    $string =~ s!\\kern${endcw}[-+]?[0-9., ]+[a-z][a-z]\s*!!;
+    # Remove kerns. Clearly needs generalizing, in principle.
+    #_debug("before kern: $string");
+    $string =~ s!\\kern${endcw}[-+]?[0-9., ]+[a-z][a-z]\s*!!g;
 
     # After all the conversions, $string contains \x{....} constructs
     # (Perl Unicode characters) where translations have happened. Change

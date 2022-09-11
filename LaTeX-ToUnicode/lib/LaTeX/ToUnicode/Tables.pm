@@ -1,6 +1,6 @@
 package LaTeX::ToUnicode::Tables;
 BEGIN {
-  $LaTeX::ToUnicode::Tables::VERSION = '0.51';
+  $LaTeX::ToUnicode::Tables::VERSION = '0.52';
 }
 use strict;
 use warnings;
@@ -61,7 +61,7 @@ our %ARGUMENT_COMMANDS = (
 our %CONTROL_SYMBOLS = (
     ' '  => ' ', # control space
     "\t" => ' ', # control space
-    "\n" => ' ', # control space
+    "\n" => ' ', # control space (but doesn't work ... please fix)
     '@'  => '#', # end of sentence
     '#'  => '#', # sharp sign
     '$'  => '$', # dollar sign
@@ -104,6 +104,7 @@ our %CONTROL_WORDS_EMPTY = (
     'newpage'       => '',
     'nolinkurl'     => '',
     'oldstylenums'  => '',
+    'pagebreak'     => '',
     'protect'       => '',
     'unskip'        => '',
     'urlprefix'     => '',
@@ -137,9 +138,10 @@ our %CONTROL_WORDS = (
     'par'            => "\n\n",
     'qquad'          => ' ', # 2em space
     'quad'           => ' ', # em space
-    'textbackslash'  => '\x{005C}',
-    'textbraceleft'  => '\x{007B}',
-    'textbraceright' => '\x{007D}',
+    'textbackslash'  => '\x{005C}', # entities so \ in output indicates
+                                    # untranslated TeX source
+    'textbraceleft'  => '\x{007B}', # entities so our bare-brace removal
+    'textbraceright' => '\x{007D}', # skips them
     'textgreater'    => '\x{003E}',
     'textless'       => '\x{003C}',
     'textquotedbl'   => '"',
