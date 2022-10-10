@@ -19,9 +19,14 @@ crossrefware package (which is also the reason for continued development).
 
 Changes:
 
-  version 1.7 2021-01-20 LaTeX::ToUnicode 0.51 for still more
-		ltx2crossrefxml support, including simple html output.
-		(No changes to BibTeX::Parser.)
+  version 1.7 2022-10-10 LaTeX::ToUnicode 0.52
+		- add new script ltx2unitxt for command line conversion.
+		- support hex/xml output as well as binary characters.
+		- recognize more control sequences when converting.
+		  (\kern, \pagebreak, \unskip, \mbox, \textquotedbl, etc.)
+		- recognize multiple braces and much other TeX syntax.
+	      2022-10-10 BibTeX::Parser 1.03
+		- avoid extra spaces around von part.
 
   version 1.6 2020-12-10 LaTeX::ToUnicode 0.11 for more ltx2crossrefxml
 		support. (No changes to BibTeX::Parser.)
