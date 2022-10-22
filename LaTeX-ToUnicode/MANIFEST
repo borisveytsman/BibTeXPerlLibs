@@ -14,3 +14,6 @@ t/release-pod-coverage.t
 t/release-pod-syntax.t
 t/release-synopsis.t
 weaver.ini
+head.ltx
+Makefile.TDS
+script/ltx2unitxt

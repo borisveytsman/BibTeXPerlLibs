@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package LaTeX::ToUnicode;
 BEGIN {
-  $LaTeX::ToUnicode::VERSION = '0.52';
+  $LaTeX::ToUnicode::VERSION = '0.53';
 }
 #ABSTRACT: Convert LaTeX commands to Unicode (simplistically)
 
@@ -54,6 +54,12 @@ sub convert {
         $string = &$user_hook($string, \%options);
         _debug("after user hook: $string");
     }
+
+    # We convert linebreaks first, since escape character might be used
+    # elsewhere
+
+    $string = _convert_linebreaks($string);
+    _debug("after converting linebreaks: $string");
     
     # Convert general commands that take arguments, since (1) they might
     # insert TeX commands that need to be converted, and (2) because
@@ -166,8 +172,11 @@ sub convert {
       warn "LaTeX::ToUnicode::convert:   please report as bug.\n";
     }
     
-    # Drop all braces.
-    $string =~ s/[{}]//g;
+    # Drop all unescaped braces.
+    $string =~ s/(?<!\\)[{}]//g;
+    # And unescape escaped ones
+    $string =~ s/\\\{/\{/g;
+    $string =~ s/\\\}/\}/g;
     
     # Backslashes might remain. Don't remove them, as it makes for a
     # useful way to find unhandled commands.
@@ -179,6 +188,15 @@ sub convert {
     
     $string;
 }
+
+#  Convert linebreaks first.  After this any \ is a TeX escape
+sub _convert_linebreaks {
+    my $string = shift;
+    $string =~ s/\\\\/\\/g;
+
+    $string;
+}
+	
 
 #  Convert commands that take a single braced argument. The table
 # defines text we're supposed to insert before and after the argument.
@@ -266,7 +284,7 @@ sub _convert_control_words {
         $string =~ s/\{\\$command$endcw\}/$repl/g;
         
         # replace \CMD, preceded by not-consumed non-backslash.
-        $string =~ s/(?<=[^\\])\\$command$endcw/$repl/g;
+        $string =~ s/\\$command$endcw/$repl/g;
         
         # replace \CMD at beginning of whole string, which otherwise
         # wouldn't be matched. Two separate regexps to avoid
@@ -295,7 +313,7 @@ sub _convert_control_symbols {
         # could have the "\ " seen first as a control space, leaving
         # a spurious \ behind. Don't consume the preceding.
         # 
-        $string =~ s/(?<=[^\\])\\$rx/$repl/g;
+        $string =~ s/\\$rx/$repl/g;
         #warn "after sym $symbol (\\$rx -> $repl), have: $string\n";        
     }
 
@@ -362,7 +380,7 @@ sub _convert_symbols {
         # preceded by a (non-consumed) non-backslash,
         # usual termination for a control word.
         # These commands don't take arguments.
-        $string =~ s/(?<=[^\\])\\$symbol$endcw/$repl/g;
+        $string =~ s/\\$symbol$endcw/$repl/g;
         
         # or the beginning of the whole string:
         $string =~ s/^\\$symbol$endcw/$repl/g;
