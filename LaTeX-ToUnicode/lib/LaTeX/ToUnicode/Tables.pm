@@ -1,6 +1,6 @@
 package LaTeX::ToUnicode::Tables;
 BEGIN {
-  $LaTeX::ToUnicode::Tables::VERSION = '0.53';
+  $LaTeX::ToUnicode::Tables::VERSION = '0.52';
 }
 use strict;
 use warnings;
@@ -67,7 +67,7 @@ our %CONTROL_SYMBOLS = (
     '$'  => '$', # dollar sign
     '%'  => '%', # percent sign
     '_'  => '_', # underscore
-#    '\\' => ' ', # line break
+    '\\' => ' ', # line break
     '-'  => '',  # hyphenation point
     '/'  => '',  # italic correction
     '!'  => '',  # negative thin space
@@ -75,8 +75,8 @@ our %CONTROL_SYMBOLS = (
     ':'  => '',  # medium space
     ';'  => ' ', # thick space
     '&'  => '\x{0026}', # ampersand
-#    '{'  => '\x{007b}', # lbrace
-#    '}'  => '\x{007d}', # rbrace
+    '{'  => '\x{007b}', # lbrace
+    '}'  => '\x{007d}', # rbrace
 );
 
 #  Alphabetic \COMMANDs that map to nothing. This is simply
@@ -645,10 +645,6 @@ This hash is necessary because TeX's parsing rules for control symbols
 are different from control words: no space or other token is needed to
 terminate control symbols.
 
-There are three control symbols that are not in tables, due to their
-"very special" role in TeX:  backslash and braces.  You need to convert
-them separately to get any sane results.
-
 =head2 %CONTROL_WORDS
 
 Keys are names of argument-less commands, such as C<\LaTeX> (without the
@@ -692,7 +688,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2022 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2021 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.
