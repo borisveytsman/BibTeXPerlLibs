@@ -1,6 +1,7 @@
 Changes for LaTeX::ToUnicode
 
-0.52	2022-11-07  Support many more control sequences, \kern removal, etc.
+0.52	2022-11-07  Support many more control sequences, \kern removal,
+        \<newline>, etc.
 
 0.11    2020-12-12  Updates and cleaing
 

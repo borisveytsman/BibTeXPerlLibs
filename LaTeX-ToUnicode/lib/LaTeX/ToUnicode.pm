@@ -88,13 +88,19 @@ sub convert {
     # 
     # /~, or ~ at the beginning of a line, is probably part of a url or
     # path, not a tie. Otherwise, consider it a space, since a no-break
-    # spot in TeX is likely fine to break in text or HTML.
+    # spot in TeX is most likely fine to break in text or HTML.
     # 
     $string =~ s,([^/])~,$1 ,g;
     
-    # Remove kerns. Clearly needs generalizing, in principle.
+    # Remove kerns. Clearly needs generalizing/sharpening to recognize
+    # dimens better, and plenty of other commands could use it.
     #_debug("before kern: $string");
-    $string =~ s!\\kern${endcw}[-+]?[0-9., ]+[a-z][a-z]\s*!!g;
+    my $dimen_re = qr/[-+]?[0-9., ]+[a-z][a-z]\s*/;
+    $string =~ s!\\kern${endcw}${dimen_re}!!g;
+    
+    # What the heck, let's do \hfuzz too (ignore optional =).
+    # Comes up pretty often.
+    $string =~ s!\\hfuzz${endcw}=?\s*${dimen_re}!!g;    
 
     # After all the conversions, $string contains \x{....} constructs
     # (Perl Unicode characters) where translations have happened. Change

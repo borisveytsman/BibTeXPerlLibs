@@ -61,7 +61,7 @@ our %ARGUMENT_COMMANDS = (
 our %CONTROL_SYMBOLS = (
     ' '  => ' ', # control space
     "\t" => ' ', # control space
-    "\n" => ' ', # control space (but doesn't work ... please fix)
+    "\n" => '\x{0020}', # control space; use entity to avoid being trimmed
     '@'  => '#', # end of sentence
     '#'  => '#', # sharp sign
     '$'  => '$', # dollar sign
@@ -688,7 +688,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2021 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2022 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.
