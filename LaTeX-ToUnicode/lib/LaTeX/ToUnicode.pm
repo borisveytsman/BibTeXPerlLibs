@@ -98,9 +98,9 @@ sub convert {
     my $dimen_re = qr/[-+]?[0-9., ]+[a-z][a-z]\s*/;
     $string =~ s!\\kern${endcw}${dimen_re}!!g;
     
-    # What the heck, let's do \hfuzz too (ignore optional =).
-    # Comes up pretty often.
-    $string =~ s!\\hfuzz${endcw}=?\s*${dimen_re}!!g;    
+    # What the heck, let's do \hfuzz and \vfuzz too. They come up pretty
+    # often and practically the same thing (ignore optional =)..
+    $string =~ s!\\[hv]fuzz${endcw}=?\s*${dimen_re}!!g;    
 
     # After all the conversions, $string contains \x{....} constructs
     # (Perl Unicode characters) where translations have happened. Change
