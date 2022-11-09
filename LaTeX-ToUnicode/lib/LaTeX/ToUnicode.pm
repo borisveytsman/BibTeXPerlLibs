@@ -300,8 +300,9 @@ sub _convert_control_symbols {
         # the preceding character must not be a backslash, else "\\ "
         # could have the "\ " seen first as a control space, leaving
         # a spurious \ behind. Don't consume the preceding.
+        # Or it could be at the beginning of a line.
         # 
-        $string =~ s/(?<=[^\\])\\$rx/$repl/g;
+        $string =~ s/(^|(?<=[^\\]))\\$rx/$repl/g;
         #warn "after sym $symbol (\\$rx -> $repl), have: $string\n";        
     }
 

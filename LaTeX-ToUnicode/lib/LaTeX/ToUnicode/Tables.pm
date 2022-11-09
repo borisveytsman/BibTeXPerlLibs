@@ -62,21 +62,41 @@ our %CONTROL_SYMBOLS = (
     ' '  => ' ', # control space
     "\t" => ' ', # control space
     "\n" => '\x{0020}', # control space; use entity to avoid being trimmed
-    '@'  => '#', # end of sentence
+    '!'  => '',  # negative thin space
+   # " umlaut
     '#'  => '#', # sharp sign
     '$'  => '$', # dollar sign
     '%'  => '%', # percent sign
-    '_'  => '_', # underscore
-    '\\' => ' ', # line break
-    '-'  => '',  # hyphenation point
-    '/'  => '',  # italic correction
-    '!'  => '',  # negative thin space
+    '&'  => '\x{0026}', # ampersand, entity to avoid html conflict
+   # ' acute accent
+    '('  => '',  # start inline math
+    ')'  => '',  # end inline math
+    '*'  => '',  # discretionary multiplication
+    '+'  => '',  # tabbing: tab stop to right
     ','  => '',  # thin space
+    '-'  => '',  # discretionary hyphenation
+   # . overdot accent
+    '/'  => '',  # italic correction
+   # 0..9 undefined
     ':'  => '',  # medium space
     ';'  => ' ', # thick space
-    '&'  => '\x{0026}', # ampersand
+    '<'  => '',  # tabbing: text to left of margin
+   # = macron accent
+    '>'  => '',  # tabbing: next tab stop
+   # ? undefined
+    '@'  => '#', # end of sentence
+   # A..Z control words, not symbols
+    '['  => '',  # start display math
+    '\\' => ' ', # line break
+    ']'  => '',  # end display math
+   # ^ circumflex accent
+    '_'  => '_', # underscore
+   # ` grave accent
+   # a..z control words, not symbols
     '{'  => '\x{007b}', # lbrace
+    '|'  => '\x{2225}', # parallel
     '}'  => '\x{007d}', # rbrace
+   # ~ tilde accent
 );
 
 #  Alphabetic \COMMANDs that map to nothing. This is simply

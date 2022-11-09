@@ -1,0 +1,13 @@
+# some basic operations to run from development.
+
+check test: Makefile
+# need bash pipefail so exit status is from the make, not the tr.
+	bash -c "set -o pipefail; env PERL5LIB=../LaTeX-ToUnicode/lib make test | tr '\r' '\n'"
+
+Makefile MYMETA.json MYMeta.yml: Makefile.PL force
+	perl Makefile.PL
+
+clean distclean:
+	rm -rf Makefile MYMETA.* blib pm_to_blib
+
+force:
