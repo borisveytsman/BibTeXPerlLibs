@@ -179,9 +179,9 @@ sub convert {
     # useful way to find unhandled commands.
 
     # leave newlines alone, but trim spaces and tabs.
-    $string =~ s/^[ \t]+//s; # remove leading whitespace
-    $string =~ s/[ \t]$//s;  # remove trailing whitespace
-    $string =~ s/[ \t]/ /gs; # collapse all remaining whitespace to one space
+    $string =~ s/^[ \t]+//s;  # remove leading whitespace
+    $string =~ s/[ \t]+$//s;  # remove trailing whitespace
+    $string =~ s/[ \t]+/ /gs; # collapse all remaining whitespace to one space
     
     $string;
 }
