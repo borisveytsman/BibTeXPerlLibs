@@ -23,7 +23,11 @@ our $endcw = qr/(?<=[a-zA-Z])(?=[^a-zA-Z]|$)\s*/;
 # what gets output.
 my $debug = 0;
 sub debuglevel { $debug = shift; }
-sub _debug { warn @_ if $debug; }
+sub _debug {
+  return unless $debug;
+  my ($pkgname,$filename,$line,$subr) = caller(1);
+  warn @_, " at $filename:$line (${pkgname}::$subr)\n";
+}
 
 # The main conversion function.
 # 
@@ -99,7 +103,7 @@ sub convert {
     $string =~ s!\\kern${endcw}${dimen_re}!!g;
     
     # What the heck, let's do \hfuzz and \vfuzz too. They come up pretty
-    # often and practically the same thing (ignore optional =)..
+    # often and practically the same thing (plus ignore optional =)..
     $string =~ s!\\[hv]fuzz${endcw}=?\s*${dimen_re}!!g;    
 
     # After all the conversions, $string contains \x{....} constructs
@@ -684,25 +688,27 @@ As an example, here is a skeleton of the hook function for TUGboat:
         $string =~ s,\\tbsurl$endcw\{([^}]*)\}
                     ,<a href="https://$1">$1</a>,gx;
         ...
-        $string =~ s/\\CandT$endcw/\\textsl{Computers \& Typesetting}/g;
+        # varepsilon, and no line break at hyphen.
+        $string =~ s,\\eTeX$endcw,\\x{03B5}<nobr>-</nobr>TeX,g;
 
     } else {
         # for plain text, we can just prepend the protocol://.
         $string =~ s,\\tbsurl$endcw,https://,g;
         ...
-        $string =~ s/\\CandT$endcw/Computers \& Typesetting/g;
+        $string =~ s,\\eTeX$endcw,\\x{03B5}-TeX,g;
     }
     ...
-    
     return $string;
   }
 
-As shown here for C<\CandT> (an abbreviation macro defined in the
+As shown here for C<\eTeX> (an abbreviation macro defined in the
 TUGboat style files), if markup is desired in the output, the
-substitutions must be different for HTML and plain text. (Otherwise, the
-desired HTML markup is transliterated as if it were plain text.)
+substitutions must be different for HTML and plain text. Otherwise, the
+desired HTML markup is transliterated as if it were plain text. Or else
+the translations must be extended so that TeX markup can be used on the
+rhs to be replaced with the desired HTML (C<&lt;nobr&gt;> in this case).
 
-For the full definition (and a lot more),
+For the full definition (and plenty of additional information),
 see the file C<ltx2crossrefxml-tugboat.cfg> in the TUGboat source
 repository at
 <https://github.com/TeXUsersGroup/tugboat/tree/trunk/capsules/crossref>.
@@ -743,7 +749,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2022 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2023 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.

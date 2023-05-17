@@ -25,9 +25,9 @@ our @LIGATURES = (
 #
 # Some additional ligatures supported in T1 encoding, but we won't (from
 # tex-text.map):
-# U+002C U+002C	<> U+201E  ; ,, -> DOUBLE LOW-9 QUOTATION MARK
-# U+003C U+003C	<> U+00AB  ; << -> LEFT POINTING GUILLEMET
-# U+003E U+003E	<> U+00BB  ; >> -> RIGHT POINTING GUILLEMET
+# U+002C U+002C <> U+201E  ; ,, -> DOUBLE LOW-9 QUOTATION MARK
+# U+003C U+003C <> U+00AB  ; << -> LEFT POINTING GUILLEMET
+# U+003E U+003E <> U+00BB  ; >> -> RIGHT POINTING GUILLEMET
 
 #  for {\MARKUP(shape) ...} and \textMARKUP{...}; although not all
 # command names are defined in LaTeX for all markups, we translate them
@@ -41,19 +41,21 @@ our %MARKUPS = (
     'em'  => 'em',
     'it'  => 'i',
     'rm'  => '',
-    'sc'  => '',
+    'sc'  => '', # qqq should uppercasify
     'sf'  => '',
     'sl'  => 'i',
     'small' => '',
+    'subscript'    => 'sub',
+    'superscript'  => 'sup',
     'tt'  => 'tt',
 );
 
 # More commands taking arguments that we want to handle.
 # 
 our %ARGUMENT_COMMANDS = (
-    'emph'	=> ['\textem{', '}'], # \textem doesn't exist, but is processed
-    'enquote'	=> ["`", "'"],
-    'path'	=> ['\texttt{', '}'], # ugh, might not be a braced argument
+    'emph'      => ['\textem{', '}'], # \textem doesn't exist, but is processed
+    'enquote'   => ["`",        "'"],
+    'path'      => ['\texttt{', '}'], # ugh, might not be a braced argument
 );
 
 #  Non-alphabetic \COMMANDs, other than accents and special cases.
@@ -104,11 +106,10 @@ our %CONTROL_SYMBOLS = (
 # redundantly specify the '' on every line.
 # 
 our %CONTROL_WORDS_EMPTY = (
-    'thinspace'     => '',
     'begingroup'    => '',
     'bgroup'        => '',
     'checkcomma'    => '',
-    'cite'          => '',
+    #'cite'          => '', # keep \cite undefined since it needs manual work
     'clearpage'     => '',
     'doi'           => '',
     'egroup'        => '',
@@ -122,10 +123,14 @@ our %CONTROL_WORDS_EMPTY = (
     'negthinspace'  => '',
     'newblock'      => '',
     'newpage'       => '',
+    'noindent'      => '',
     'nolinkurl'     => '',
     'oldstylenums'  => '',
     'pagebreak'     => '',
     'protect'       => '',
+    'raggedright'   => '',
+    'relax'         => '',
+    'thinspace'     => '',
     'unskip'        => '',
     'urlprefix'     => '',
 );
@@ -182,17 +187,20 @@ our %SYMBOLS = ( # Table 3.2 in Lamport, plus more
     'DJ' => '\x{0110}', # D with stroke
     'dj' => '\x{0111}',
     'i'  => '\x{0131}', # small dotless i
-    'L'	 => '\x{0141}', # L with stroke
-    'l'	 => '\x{0142}',
+    'L'  => '\x{0141}', # L with stroke
+    'l'  => '\x{0142}',
     'NG' => '\x{014A}', # ENG
     'ng' => '\x{014B}',
     'OE' => '\x{0152}', # OE
     'oe' => '\x{0153}',
     'O'  => '\x{00D8}', # O with stroke
-    'o'	 => '\x{00F8}',
+    'o'  => '\x{00F8}',
     'SS' => 'SS',       # lately also U+1E9E, but SS seems good enough
     'ss' => '\x{00DF}',
     'TH' => '\x{00DE}', # THORN
+    'textordfeminine'  => '\x{00AA}',
+    'textordmasculine' => '\x{00BA}',
+    'textregistered'   => '\x{00AE}',
     'th' => '\x{00FE}',
     'TM' => '\x{2122}', # trade mark sign
 );
@@ -200,7 +208,7 @@ our %SYMBOLS = ( # Table 3.2 in Lamport, plus more
 #  Accent commands that are not alphabetic.
 # 
 our %ACCENT_SYMBOLS = (
-  "\"" => {		# with diaresis
+  "\"" => {             # with diaresis
     A => '\x{00C4}',
     E => '\x{00CB}',
     H => '\x{1E26}',
@@ -223,7 +231,7 @@ our %ACCENT_SYMBOLS = (
     x => '\x{1E8d}',
     y => '\x{00FF}',
   },
-  "'" => {		# with acute
+  "'" => {              # with acute
     A => '\x{00C1}',
    AE => '\x{01FC}',
     C => '\x{0106}',
@@ -263,7 +271,7 @@ our %ACCENT_SYMBOLS = (
     y => '\x{00FD}',
     z => '\x{017A}',
   },
-  "^" => {		# with circumflex
+  "^" => {              # with circumflex
     A => '\x{00C2}',
     C => '\x{0108}',
     E => '\x{00CA}',
@@ -272,6 +280,7 @@ our %ACCENT_SYMBOLS = (
     I => '\x{00CE}',
     J => '\x{0134}',
     O => '\x{00D4}',
+    R => 'R\x{0302}',
     S => '\x{015C}',
     U => '\x{00DB}',
     W => '\x{0174}',
@@ -295,7 +304,7 @@ our %ACCENT_SYMBOLS = (
     y => '\x{0177}',
     z => '\x{1E91}',
   },
-  "`" => {		# with grave
+  "`" => {              # with grave
     A => '\x{00C0}',
     E => '\x{00C8}',
     I => '\x{00CC}',
@@ -315,7 +324,7 @@ our %ACCENT_SYMBOLS = (
     w => '\x{1E81}',
     y => '\x{1EF3}',
   },
-  "." => {		# with dot above
+  "." => {              # with dot above
     A => '\x{0226}',
     B => '\x{1E02}',
     C => '\x{010A}',
@@ -357,7 +366,7 @@ our %ACCENT_SYMBOLS = (
     y => '\x{1E8f}',
     z => '\x{017C}',
   },
-  '=' => {		# with macron
+  '=' => {              # with macron
     A => '\x{0100}',
    AE => '\x{01E2}',
     E => '\x{0112}',
@@ -377,7 +386,7 @@ our %ACCENT_SYMBOLS = (
     u => '\x{016B}',
     y => '\x{0233}',
   },
-  "~" => {		# with tilde
+  "~" => {              # with tilde
     A => '\x{00C3}',
     E => '\x{1EBC}',
     I => '\x{0128}',
@@ -402,13 +411,13 @@ our %ACCENT_SYMBOLS = (
 #  Accent commands that are alphabetic.
 # 
 our %ACCENT_LETTERS = (
-  "H" => {		# with double acute
+  "H" => {              # with double acute
     O => '\x{0150}',
     U => '\x{0170}',
     o => '\x{0151}',
     u => '\x{0171}',
   },
-  "c" => {		# with cedilla
+  "c" => {              # with cedilla
     C => '\x{00C7}',
     D => '\x{1E10}',
     E => '\x{0228}',
@@ -432,7 +441,7 @@ our %ACCENT_LETTERS = (
     s => '\x{015F}',
     t => '\x{0163}',
   },
-  "d" => {		# with dot below
+  "d" => {              # with dot below
     A => '\x{1EA0}',
     B => '\x{1E04}',
     D => '\x{1E0C}',
@@ -474,7 +483,7 @@ our %ACCENT_LETTERS = (
     y => '\x{1EF5}',
     z => '\x{1E93}',
   },
-  "h" => {		# with hook above
+  "h" => {              # with hook above
     A => '\x{1EA2}',
     E => '\x{1EBA}',
     I => '\x{1EC8}',
@@ -490,7 +499,7 @@ our %ACCENT_LETTERS = (
     u => '\x{1EE7}',
     y => '\x{1EF7}',
   },
-  "k" => {		# with ogonek
+  "k" => {              # with ogonek
     A => '\x{0104}',
     E => '\x{0118}',
     I => '\x{012E}',
@@ -504,7 +513,7 @@ our %ACCENT_LETTERS = (
     o => '\x{01EB}',
     u => '\x{0173}',
   },
-  "r" => {		# with ring above
+  "r" => {              # with ring above
     A => '\x{00C5}',
     U => '\x{016E}',
     a => '\x{00E5}',
@@ -512,7 +521,7 @@ our %ACCENT_LETTERS = (
     w => '\x{1E98}',
     y => '\x{1E99}',
   },
-  "u" => {		# with breve
+  "u" => {              # with breve
     A => '\x{0102}',
     E => '\x{0114}',
     G => '\x{011E}',
@@ -528,7 +537,7 @@ our %ACCENT_LETTERS = (
     o => '\x{014F}',
     u => '\x{016D}',
   },
-  "v" => {		# with caron
+  "v" => {              # with caron
     A => '\x{01CD}',
     C => '\x{010C}',
     D => '\x{010E}',
@@ -708,7 +717,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2022 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2023 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.
