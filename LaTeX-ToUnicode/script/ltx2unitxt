@@ -122,12 +122,12 @@ END
 
  my $VERSION = <<END;
 ltx2unitxt (bibtexperllibs) 0.51
-Copyright 2021 Karl Berry.
+Copyright 2023 Karl Berry.
 This is free software: you can redistribute it and/or
 modify it under the same terms as Perl itself.
 END
 
-    use Getopt::Long;
+    use Getopt::Long qw(:config no_ignore_case); # otherwise v|V is the same
 
     GetOptions(
       "config|c=s" => \($opts{c}),
