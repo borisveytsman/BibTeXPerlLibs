@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package LaTeX::ToUnicode;
 BEGIN {
-  $LaTeX::ToUnicode::VERSION = '0.52';
+  $LaTeX::ToUnicode::VERSION = '0.53';
 }
 #ABSTRACT: Convert LaTeX commands to Unicode (simplistically)
 
@@ -516,7 +516,7 @@ LaTeX::ToUnicode - Convert LaTeX commands to Unicode
 
 =head1 VERSION
 
-version 0.51
+version 0.53
 
 =head1 SYNOPSIS
 

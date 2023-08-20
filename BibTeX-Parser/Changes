@@ -1,5 +1,7 @@
 Revision history for BibTeX::Parser
 
+1.04    2023-08-20  New release
+
 1.03    2022-11-06
 	Avoid extra spaces with von part. (Author.pm)
 	Add ' to re_namechar. (Parser.pm)
