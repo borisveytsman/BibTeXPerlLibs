@@ -1,5 +1,5 @@
 			   BibTeX Perl Libs
-			     Version 1.7
+			     Version 1.8
 		  Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This package provides BibTeX-related Perl libraries by Gerhard Gossen,
@@ -19,6 +19,8 @@ crossrefware package (which is also the reason for continued development).
 
 Changes:
 
+  version 1.8 2023-08-20 Tests updates, timestamp updates.
+ 
   version 1.7 2021-01-20 LaTeX::ToUnicode 0.51 for still more
 		ltx2crossrefxml support, including simple html output.
 		(No changes to BibTeX::Parser.)
