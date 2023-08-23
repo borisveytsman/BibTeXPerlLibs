@@ -53,7 +53,7 @@ our %MARKUPS = (
 # More commands taking arguments that we want to handle.
 # 
 our %ARGUMENT_COMMANDS = (
-    'emph'      => ['\textem{', '}'], # \textem doesn't exist, but is processed
+    'emph'      => ['\textem{', '}'], # \textem doesn't exist, but we handle it
     'enquote'   => ["`",        "'"],
     'path'      => ['\texttt{', '}'], # ugh, might not be a braced argument
 );
@@ -663,7 +663,7 @@ A hash where the keys are non-alphabetic C<\command>s (without the
 backslash), other than accents and special cases. These don't take
 arguments. Although some of these have Unicode equivalents, such as the
 C<\,> thin space, it seems better to keep the output as simple as
-possible; spacing tweaks in the TeX aren't usually desirable in plain
+possible; small spacing tweaks in TeX aren't usually desirable in plain
 text or HTML.
 
 The values are single-quoted strings C<'\x{...}'>, not double-quoted

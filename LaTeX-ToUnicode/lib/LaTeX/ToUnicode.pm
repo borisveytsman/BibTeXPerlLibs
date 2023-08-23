@@ -22,11 +22,15 @@ our $endcw = qr/(?<=[a-zA-Z])(?=[^a-zA-Z]|$)\s*/;
 # all we need for is debugging being on and off. And it's pretty random
 # what gets output.
 my $debug = 0;
+
 sub debuglevel { $debug = shift; }
 sub _debug {
   return unless $debug;
-  my ($pkgname,$filename,$line,$subr) = caller(1);
-  warn @_, " at $filename:$line (${pkgname}::$subr)\n";
+  # The backtrace info is split between caller(0) and caller(1), sigh.
+  # We don't need the package name, it's included in $subr in practice.
+  my (undef,$filename,$line,undef) = caller(0);
+  my (undef,undef,undef,$subr) = caller(1);
+  warn @_, " at $filename:$line ($subr)\n";
 }
 
 # The main conversion function.
@@ -325,7 +329,7 @@ sub _convert_accents {
     $string =~ s/(\\(.)\s*(\\?\w{1,1}))/        $tbl{$2}{$3} || $1/eg; # \"a
     $string =~ s/(\\(.)\s*\{(\\?\w{1,2})\})/    $tbl{$2}{$3} || $1/eg; # \"{a}
     
-    # second the alphabetic commands, like \c. They have be handled
+    # second the alphabetic commands, like \c. They have to be handled
     # differently because \cc is not \c{c}! The only difference in the
     # regular expressions is using $endcw instead of just \s*.
     # 
@@ -413,16 +417,18 @@ sub _convert_markups {
     
     # HTML is different.
     return _convert_markups_html($string) if $options->{html};
-    # Ok, we'll "convert" to plain text by removing the markup commands.
+    
+    # Not HTML, so here we'll "convert" to plain text by removing the
+    # markup commands.
 
-    # we can do all markup commands at once.
+    # we can do all the markup commands at once.
     my $markups = join('|', keys %LaTeX::ToUnicode::Tables::MARKUPS);
     
     # Remove \textMARKUP{...}, leaving just the {...}
     $string =~ s/\\text($markups)$endcw//g;
 
-    # Similarly remove \MARKUPshape. 
-    $string =~ s/\\($markups)shape$endcw//g;
+    # Similarly remove \MARKUPshape, plus remove \upshape.
+    $string =~ s/\\($markups|up)shape$endcw//g;
 
     # Remove braces and \command in: {... \MARKUP ...}
     $string =~ s/(\{[^{}]+)\\(?:$markups)$endcw([^{}]+\})/$1$2/g;
