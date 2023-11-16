@@ -114,6 +114,7 @@ our %CONTROL_WORDS_EMPTY = (
     'doi'           => '',
     'egroup'        => '',
     'endgroup'      => '',
+    'ensuremath'    => '',
     'hbox'          => '',
     'ignorespaces'  => '',
     'mbox'          => '',
@@ -601,7 +602,7 @@ our %GERMAN = ( # for package `german'/`ngerman'
     "\"'"   => '“',
     '"<'    => '«',
     '">'    => '»',
-    '"-'    => '\x{AD}',    # soft hyphen
+    '"-'    => '\x{00AD}',    # soft hyphen
     '""'    => '\x{200B}',  # zero width space
     '"~'    => '\x{2011}',  # non-breaking hyphen
     '"='    => '-',

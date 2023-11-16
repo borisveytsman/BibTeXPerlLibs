@@ -118,8 +118,17 @@ sub convert {
     # 
     if (! $options{entities}) {
       # Convert our \x strings from Tables.pm to the binary characters.
-      # Assume no more than four hex digits.
-      $string =~ s/\\x\{(.{1,4})\}/ pack('U*', hex($1))/eg;
+      
+      # As an extra-special case, we want to preserve the translation of
+      # \{ and \} as 007[bd] entities even if the --entities option is
+      # not give; otherwise they'd get eliminated like all other braces.
+      # Use a temporary cs \xx to keep them marked, and don't use braces
+      # to delimit the argument since they'll get deleted.
+      $string =~ s/\\x\{(007[bd])\}/\\xx($1)/g;
+      
+      # Convert all other characters to characters.
+      # Assume exactly four hex digits, since we wrote Tables.pm that way.
+      $string =~ s/\\x\{(....)\}/ pack('U*', hex($1))/eg;
 
     } elsif ($options{entities}) {
       # Convert the XML special characters that appeared in the input,
@@ -180,9 +189,15 @@ sub convert {
       warn "LaTeX::ToUnicode::convert:   please report as bug.\n";
     }
     
-    # Drop all braces.
+    # Drop all remaining braces.
     $string =~ s/[{}]//g;
     
+    if (! $options{entities}) {
+      # With all the other braces gone, now we can convert the preserved
+      # brace entities from \{ and \} to actual braces.
+      $string =~ s/\\xx\((007[bd])\)/ pack('U*', hex($1))/eg;
+    }
+
     # Backslashes might remain. Don't remove them, as it makes for a
     # useful way to find unhandled commands.
 
