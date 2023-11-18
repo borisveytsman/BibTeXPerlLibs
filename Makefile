@@ -12,8 +12,11 @@ DIRS = BibTeX-Parser LaTeX-ToUnicode
 all:
 
 clean:
+	for dir in ${DIRS}; do (cd $$dir && ${MAKE} -f Makefile.TDS clean); done
 
-distclean:
+
+distclean: clean
+	for dir in ${DIRS}; do (cd $$dir && ${MAKE} -f Makefile.TDS distclean); done
 
 install:
 	for dir in ${DIRS}; do (cd $$dir && ${MAKE} -f Makefile.TDS install); done
