@@ -11,6 +11,8 @@ DOCDIR = $(PREFIX)/doc/bibtex/bibtexperllibs
 
 all:  
 
+docs:
+
 install:  
 	mkdir -p $(LIBDIR)
 	cp -r lib/* $(LIBDIR)

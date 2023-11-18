@@ -1,6 +1,6 @@
 package LaTeX::ToUnicode::Tables;
 BEGIN {
-  $LaTeX::ToUnicode::Tables::VERSION = '0.53';
+  $LaTeX::ToUnicode::Tables::VERSION = '0.54';
 }
 use strict;
 use warnings;
@@ -626,7 +626,7 @@ LaTeX::ToUnicode::Tables - Character tables for LaTeX::ToUnicode
 
 =head1 VERSION
 
-version 0.53
+version 0.54
 
 =head1 CONSTANTS
 
