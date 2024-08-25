@@ -39,6 +39,7 @@ our %MARKUPS = (
     'bf'  => 'b',
     'cal' => '',
     'em'  => 'em',
+    'french' => '',  # polyglossia
     'it'  => 'i',
     'rm'  => '',
     'sc'  => '', # qqq should uppercasify
@@ -55,6 +56,7 @@ our %MARKUPS = (
 our %ARGUMENT_COMMANDS = (
     'emph'      => ['\textem{', '}'], # \textem doesn't exist, but we handle it
     'enquote'   => ["`",        "'"],
+    'natexlab'  => ["",         ""],  # natbib
     'path'      => ['\texttt{', '}'], # ugh, might not be a braced argument
 );
 
