@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package LaTeX::ToUnicode;
 BEGIN {
-  $LaTeX::ToUnicode::VERSION = '0.54';
+  $LaTeX::ToUnicode::VERSION = '0.55';
 }
 #ABSTRACT: Convert LaTeX commands to Unicode (simplistically)
 
@@ -780,7 +780,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2023 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2024 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.

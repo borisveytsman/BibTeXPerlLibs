@@ -1,5 +1,5 @@
 			   BibTeX Perl Libs
-			     Version 1.9
+			     Version 1.91
 		  Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This package provides BibTeX-related Perl libraries by Gerhard Gossen,
@@ -15,12 +15,16 @@ Bug reports, source code: https://github.com/borisveytsman/bibtexperllibs
 Releases: https://ctan.org/pkg/bibtexperllibs
 
 For an example of using the LaTeX::ToUnicode module, see the
-crossrefware package (which is also the reason for continued development).
+crossrefware package (which has also been the motivation for continued
+development here).
 
 Changes:
 
-  version 1.9 2023-11-18 Now braces are rendered correctly by
-  	      		 LaTeX-ToUnicode
+ version 1.91 2024-08-27 Handle (ignore) simple \penalty commands and
+                         \natexlab for natbib, and \textfrench for polyglossia.
+                         doc updates.
+
+  version 1.9 2023-11-18 Braces are rendered correctly by LaTeX-ToUnicode.
 
   version 1.8 2023-08-20 Tests updates, timestamp updates.
  

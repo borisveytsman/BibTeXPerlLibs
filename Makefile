@@ -15,6 +15,10 @@ clean:
 	for dir in ${DIRS}; do (cd $$dir && ${MAKE} -f Makefile.TDS clean); done
 
 
+lastrel = /home/ftp/tex-archive/support/bibtexperllibs
+diff:
+	diff -u0r $(lastrel) .
+
 distclean: clean
 	for dir in ${DIRS}; do (cd $$dir && ${MAKE} -f Makefile.TDS distclean); done
 
