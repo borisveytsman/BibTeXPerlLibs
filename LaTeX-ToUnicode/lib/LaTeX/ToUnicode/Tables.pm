@@ -29,11 +29,13 @@ our @LIGATURES = (
 # U+003C U+003C <> U+00AB  ; << -> LEFT POINTING GUILLEMET
 # U+003E U+003E <> U+00BB  ; >> -> RIGHT POINTING GUILLEMET
 
-#  for {\MARKUP(shape) ...} and \textMARKUP{...}; although not all
-# command names are defined in LaTeX for all markups, we translate them
-# anyway. Also, LaTeX has more font axes not included here: md, ulc, sw,
-# ssc, etc. See ltfntcmd.dtx and ltfssaxes.dtx if we ever want to try
-# for completeness.
+#  for {\MARKUP ...} and {\MARKUPshape ...} and \textMARKUP{...}. Not
+# every combination is defined (e.g., there is no \subscriptshape
+# command), but we convert them all anyway (in convert_markups).
+# 
+# LaTeX has more font axes that are not included here: md, ulc, sw, ssc,
+# etc. See ltfntcmd.dtx and ltfssaxes.dtx if we ever want to try for
+# completeness.
 # 
 our %MARKUPS = (
     'bf'  => 'b',

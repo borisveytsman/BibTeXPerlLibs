@@ -276,16 +276,16 @@ sub _convert_urls {
         # removed.  We want to accept and ignore such extra braces,
         # hence the \{+ ... \}+ in recognizing TEXT.
         # 
-#warn "txt url: starting with $string\n";
+        #warn "txt url: starting with $string\n";
         if ($string =~ m/\\href$endcw\{([^}]*)\}\s*\{+([^}]*)\}+/) {
           my $url = $1;
           my $text = $2;
-#warn "   url: $url\n";
-#warn "  text: $text\n";
+          #warn "    url: $url\n";
+          #warn "   text: $text\n";
           my $repl = ($url =~ m!$text$!) ? $url : "$text ($url)";
-#warn "  repl: $repl\n";
+          #warn "   repl: $repl\n";
           $string =~ s/\\href$endcw\{([^}]*)\}\s*\{+([^}]*)\}+/$repl/;
-#warn "  str:  $string\n";
+          #warn " result:  $string\n";
         }
     }
     
@@ -449,17 +449,22 @@ sub _convert_markups {
     # we can do all the markup commands at once.
     my $markups = join('|', keys %LaTeX::ToUnicode::Tables::MARKUPS);
     
+    #warn "_convert_markups plain text: starting with $string\n";
     # Remove \textMARKUP{...}, leaving just the {...}
     $string =~ s/\\text($markups)$endcw//g;
+    #warn " after \text: $string\n";
 
     # Similarly remove \MARKUPshape, plus remove \upshape.
     $string =~ s/\\($markups|up)shape$endcw//g;
+    #warn " after \...shape: $string\n";
 
     # Remove braces and \command in: {... \MARKUP ...}
     $string =~ s/(\{[^{}]+)\\(?:$markups)$endcw([^{}]+\})/$1$2/g;
+    #warn " after ...\\markup...: $string\n";
 
     # Remove braces and \command in: {\MARKUP ...}
     $string =~ s/\{\\(?:$markups)$endcw([^{}]*)\}/$1/g;
+    #warn " after {\\markup...}: $string\n";
 
     # Remove: {\MARKUP
     # Although this will leave unmatched } chars behind, there's no
@@ -467,6 +472,7 @@ sub _convert_markups {
     # look like: {\em {The TeX{}book}}. Also might, in principle, be
     # at the end of a line.
     $string =~ s/\{\\(?:$markups)$endcw//g;
+    #warn " after {\\markup: $string\n";
 
     # Ultimately we remove all braces in ltx2crossrefxml SanitizeText fns,
     # so the unmatched braces don't matter ... that code should be moved.
