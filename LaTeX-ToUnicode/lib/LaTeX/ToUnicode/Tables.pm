@@ -205,6 +205,7 @@ our %SYMBOLS = ( # Table 3.2 in Lamport, plus more
     'TH' => '\x{00DE}', # THORN
     'textordfeminine'  => '\x{00AA}',
     'textordmasculine' => '\x{00BA}',
+    "textquotesingle"  => '\x{0027}',
     'textregistered'   => '\x{00AE}',
     'th' => '\x{00FE}',
     'TM' => '\x{2122}', # trade mark sign
