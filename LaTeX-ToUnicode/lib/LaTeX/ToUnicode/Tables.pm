@@ -1,6 +1,6 @@
 package LaTeX::ToUnicode::Tables;
 BEGIN {
-  $LaTeX::ToUnicode::Tables::VERSION = '0.55';
+  $LaTeX::ToUnicode::Tables::VERSION = '1.92';
 }
 use strict;
 use warnings;
@@ -8,7 +8,7 @@ use warnings;
 
 use utf8; # just for the german support
 
-# Technically not all of these are ligatures, but close enough.
+# TeXnically not all of these are ligatures, but close enough.
 # Order is important, so has to be a list, not a hash.
 # 
 our @LIGATURES = (
@@ -48,8 +48,8 @@ our %MARKUPS = (
     'sf'  => '',
     'sl'  => 'i',
     'small' => '',
-    'subscript'    => 'sub',
-    'superscript'  => 'sup',
+    'subscript'    => 'sub',  # i.e., \textsubscript
+    'superscript'  => 'sup',  # \textsuperscript
     'tt'  => 'tt',
 );
 
@@ -90,7 +90,7 @@ our %CONTROL_SYMBOLS = (
    # = macron accent
     '>'  => '',  # tabbing: next tab stop
    # ? undefined
-    '@'  => '#', # end of sentence
+    '@'  => '', # end of sentence
    # A..Z control words, not symbols
     '['  => '',  # start display math
     '\\' => ' ', # line break
@@ -128,9 +128,11 @@ our %CONTROL_WORDS_EMPTY = (
     'negthinspace'  => '',
     'newblock'      => '',
     'newpage'       => '',
+    'nobreak'       => '',
     'noindent'      => '',
     'nolinkurl'     => '',
     'oldstylenums'  => '',
+    'par'           => '',
     'pagebreak'     => '',
     'protect'       => '',
     'raggedright'   => '',
@@ -153,25 +155,35 @@ our %CONTROL_WORDS = (
     'MF'             => 'Metafont',
     'MP'             => 'MetaPost',
     'Omega'          => '\x{03A9}',
+    'P'              => '\x{00B6}',
+    'S'              => '\x{00A7}',
     'TeX'            => 'TeX',
     'XeLaTeX'        => 'XeLaTeX',
     'XeTeX'          => 'XeTeX',
+    'allowbreak'    => '<wbr>',
+    'ast'            => '*',
     'bullet'         => '\x{2022}',
     'dag'            => '\x{2020}',
+    'dagger'         => '\x{2020}',
     'ddag'           => '\x{2021}',
+    'ddagger'        => '\x{2021}',
     'dots'           => '\x{2026}',
     'epsilon'        => '\x{03F5}',
-    'hookrightarrow' => '\x{2194}',
+    'hookleftarrow'  => '\x{21A9}',
+    'hookrightarrow' => '\x{21AA}',
     'ldots'          => '\x{2026}',
     'log'            => 'log',
     'omega'          => '\x{03C9}',
     'par'            => "\n\n",
+    'parallel'       => '\x{2016}',
     'qquad'          => ' ', # 2em space
     'quad'           => ' ', # em space
     'textbackslash'  => '\x{005C}', # entities so \ in output indicates
                                     # untranslated TeX source
     'textbraceleft'  => '\x{007B}', # entities so our bare-brace removal
     'textbraceright' => '\x{007D}', # skips them
+    'textdagger'     => '\x{2020}',
+    'textddagger'    => '\x{2020}',
     'textgreater'    => '\x{003E}',
     'textless'       => '\x{003C}',
     'textquotedbl'   => '"',
@@ -723,7 +735,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2024 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2025 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.
