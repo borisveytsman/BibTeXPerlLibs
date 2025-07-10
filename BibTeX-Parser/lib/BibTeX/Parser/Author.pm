@@ -5,6 +5,7 @@ package BibTeX::Parser::Author;
 
 use warnings;
 use strict;
+use BibTeX::Parser qw (_split_braced_string);
 
 use overload
 	'""' => \&to_string;

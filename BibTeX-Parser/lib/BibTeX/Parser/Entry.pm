@@ -7,6 +7,7 @@ use warnings;
 use strict;
 
 use BibTeX::Parser::Author;
+use BibTeX::Parser qw (_split_braced_string);
 
 sub new {
 	my ($class, $type, $key, $parse_ok, $fieldsref) = @_;
