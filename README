@@ -1,5 +1,5 @@
 			   BibTeX Perl Libs
-			     Version 1.91
+			     Version 1.92
 		  Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This package provides BibTeX-related Perl libraries by Gerhard Gossen,
@@ -20,9 +20,15 @@ development here).
 
 Changes:
 
- version 1.91 2024-08-27 Handle (ignore) simple \penalty commands and
-                         \natexlab for natbib, and \textfrench for polyglossia.
-                         doc updates.
+  version 1.92 2025-07-09 For BibTeX::Parser, new options hash to allow
+                          omitting warnings for undefined ack-* strings.
+                          For LaTeX::ToUnicode, correct \hookrightarrow
+                          definition, add dagger definitions, etc.
+                          All versions now unified to 1.92.
+  
+  version 1.91 2024-08-27 Handle (ignore) simple \penalty commands and
+                          \natexlab for natbib, \textfrench for polyglossia.
+                          Doc updates.
 
   version 1.9 2023-11-18 Braces are rendered correctly by LaTeX-ToUnicode.
 
