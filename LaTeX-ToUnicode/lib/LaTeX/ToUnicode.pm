@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package LaTeX::ToUnicode;
 BEGIN {
-  $LaTeX::ToUnicode::VERSION = '0.55';
+  $LaTeX::ToUnicode::VERSION = '1.92';
 }
 #ABSTRACT: Convert LaTeX commands to Unicode (simplistically)
 
@@ -19,8 +19,9 @@ use LaTeX::ToUnicode::Tables;
 # and then ignore any following whitespace.
 our $endcw = qr/(?<=[a-zA-Z])(?=[^a-zA-Z]|$)\s*/;
 
-# all we need for is debugging being on and off. And it's pretty random
-# what gets output.
+# Debugging output on or off; it's pretty random what gets output.
+# Add more as needed. There is also more debugging output as warn
+# statements, commented out, too voluminous to enable here.
 my $debug = 0;
 
 sub debuglevel { $debug = shift; }
@@ -59,6 +60,7 @@ sub convert {
     
     my $user_hook = $options{hook};
     if ($user_hook) {
+        _debug("before user hook: $string");
         $string = &$user_hook($string, \%options);
         _debug("after user hook: $string");
     }
@@ -92,7 +94,8 @@ sub convert {
     $string = _convert_ligatures($string);
     
     # Let's handle ties here, after all the other conversions, since
-    # they don't fit well with any of the tables.
+    # they don't fit well with any of the tables. We don't handle TeX's
+    # other special characters: $ & # ^ _.
     # 
     # /~, or ~ at the beginning of a line, is probably part of a url or
     # path, not a tie. Otherwise, consider it a space, since we can't
@@ -111,7 +114,7 @@ sub convert {
     $string =~ s!\\kern${endcw}${dimen_re}!!g;
     
     # What the heck, let's do \hfuzz and \vfuzz too. They come up pretty
-    # often and practically the same thing (plus ignore optional =)..
+    # often and it's practically the same thing (just also ignore optional =)..
     $string =~ s!\\[hv]fuzz${endcw}=?\s*${dimen_re}!!g;    
 
     # And here is \penalty. natbib outputs \penalty0 sometimes.
@@ -449,6 +452,7 @@ sub _convert_markups {
     # we can do all the markup commands at once.
     my $markups = join('|', keys %LaTeX::ToUnicode::Tables::MARKUPS);
     
+    #warn "_convert_markups: markups = $markups\n";
     #warn "_convert_markups plain text: starting with $string\n";
     # Remove \textMARKUP{...}, leaving just the {...}
     $string =~ s/\\text($markups)$endcw//g;
@@ -459,6 +463,7 @@ sub _convert_markups {
     #warn " after \...shape: $string\n";
 
     # Remove braces and \command in: {... \MARKUP ...}
+    # where neither ... can contain braces.
     $string =~ s/(\{[^{}]+)\\(?:$markups)$endcw([^{}]+\})/$1$2/g;
     #warn " after ...\\markup...: $string\n";
 
@@ -475,7 +480,7 @@ sub _convert_markups {
     #warn " after {\\markup: $string\n";
 
     # Ultimately we remove all braces in ltx2crossrefxml SanitizeText fns,
-    # so the unmatched braces don't matter ... that code should be moved.
+    # so the unmatched braces don't matter ... that code should be moved here.
 
     $string;
 }
@@ -553,7 +558,7 @@ LaTeX::ToUnicode - Convert LaTeX commands to Unicode
 
 =head1 VERSION
 
-version 0.54
+version 1.92
 
 =head1 SYNOPSIS
 
@@ -786,7 +791,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2024 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2025 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.
