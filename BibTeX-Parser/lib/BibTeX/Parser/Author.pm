@@ -1,13 +1,10 @@
 package BibTeX::Parser::Author;
 {
-  $BibTeX::Parser::Author::VERSION = '1.04';
+  $BibTeX::Parser::Author::VERSION = '1.92';
 }
 
 use warnings;
 use strict;
-
-use BibTeX::Parser;
-
 
 use overload
 	'""' => \&to_string;
@@ -351,7 +348,7 @@ BibTeX::Author - Contains a single author for a BibTeX document.
 
 =head1 SYNOPSIS
 
-This class ist a wrapper for a single BibTeX author. It is usually created
+This class is a wrapper for a single BibTeX author. It is usually created
 by a BibTeX::Parser.
 
     use BibTeX::Parser::Author;
@@ -366,8 +363,6 @@ by a BibTeX::Parser.
     # or ...
     
     my ($first, $von, $last, $jr) = BibTeX::Author->split($fullname);
-
-
 
 =head1 FUNCTIONS
 
@@ -398,7 +393,7 @@ with four strings, some of them possibly empty.
 
 =head2 to_string
 
-Return string representation of the name.
+Return string representation of the name, as described next.
 
 =head1 NOTES
 
@@ -420,7 +415,7 @@ von Last, Jr, First
 
 =back
 
-The module always converts the first form to the second of third one
+The module always converts the first form to the second or third one
 to allow simple string comparisons.  
 
 The algorithm to determine the von part is the following: von part
@@ -431,8 +426,7 @@ the following token is not: C<{von}>
 
 =head1 VERSION
 
-version 1.04
-
+version 1.92
 
 =head1 AUTHOR
 
@@ -442,10 +436,9 @@ Karl Berry <karl@freefriends.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013--2023 by Gerhard Gossen and Boris Veytsman and Karl Berry.
+Copyright 2013-2025 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
