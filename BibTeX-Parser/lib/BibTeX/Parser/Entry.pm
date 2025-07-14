@@ -6,8 +6,8 @@ package BibTeX::Parser::Entry;
 use warnings;
 use strict;
 
-use BibTeX::Parser::Author;
-use BibTeX::Parser qw (_split_braced_string);
+require BibTeX::Parser::Author; # mutual dependencies
+require BibTeX::Parser;
 
 sub new {
 	my ($class, $type, $key, $parse_ok, $fieldsref) = @_;

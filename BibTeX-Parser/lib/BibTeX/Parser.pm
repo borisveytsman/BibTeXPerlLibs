@@ -6,7 +6,7 @@ package BibTeX::Parser;
 use warnings;
 use strict;
 
-use BibTeX::Parser::Entry;
+require BibTeX::Parser::Entry; # mutual dependency, so use instead of require
 
 
 my $re_namechar = qr/[a-zA-Z0-9\!\$\&\*\+\-\.\/\:\;\<\>\?\[\]\^\_\`\|\']/o;
