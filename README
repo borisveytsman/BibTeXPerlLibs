@@ -1,5 +1,5 @@
 			   BibTeX Perl Libs
-			     Version 1.92
+			     Version 1.93
 		  Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This package provides BibTeX-related Perl libraries by Gerhard Gossen,
@@ -19,6 +19,9 @@ crossrefware package (which has also been the motivation for continued
 development here).
 
 Changes:
+
+  version 1.93 2025-08-31 Match @string identifiers case-insensitively,
+                          as BibTeX does.
 
   version 1.92 2025-07-09 For BibTeX::Parser, new options hash to allow
                           omitting warnings for undefined ack-* strings.
