@@ -20,8 +20,10 @@ development here).
 
 Changes:
 
-  version 1.93 2025-08-31 Match @string identifiers case-insensitively,
-                          as BibTeX does.
+  version 1.93 2025-08-31 BibTeX::Parser: match @string identifiers
+                          case-insensitively, as BibTeX does.
+                          LaTeX::ToUnicode: recognize \guillemetleft
+                          and \guillemetright.
 
   version 1.92 2025-07-09 For BibTeX::Parser, new options hash to allow
                           omitting warnings for undefined ack-* strings.
