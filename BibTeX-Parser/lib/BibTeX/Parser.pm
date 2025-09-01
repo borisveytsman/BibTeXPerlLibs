@@ -1,6 +1,6 @@
 package BibTeX::Parser;
 {
-  $BibTeX::Parser::VERSION = '1.92';
+    $BibTeX::Parser::VERSION = '1.93';
 }
 # ABSTRACT: A pure perl BibTeX parser
 use warnings;

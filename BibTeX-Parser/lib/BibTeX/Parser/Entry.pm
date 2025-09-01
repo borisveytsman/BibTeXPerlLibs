@@ -1,6 +1,6 @@
 package BibTeX::Parser::Entry;
 {
-  $BibTeX::Parser::Entry::VERSION = '1.92';
+  $BibTeX::Parser::Entry::VERSION = '1.93';
 }
 
 use warnings;
@@ -421,7 +421,7 @@ Can take values 'Uppercase' (the default), 'Lowercase' or 'Titlecase'
 
 =head1 VERSION
 
-version 1.92
+version 1.93
 
 =head1 AUTHOR
 
