@@ -8,6 +8,11 @@ use warnings;
 
 use utf8; # just for the german support
 
+# The replacement texts throughout this file must not use HTML markup,
+# since any <>& may be converted to entities in the main convert()
+# function in ToUnicode.pm.
+
+
 # TeXnically not all of these are ligatures, but close enough.
 # Order is important, so has to be a list, not a hash.
 # 
