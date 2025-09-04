@@ -258,6 +258,7 @@ sub _convert_urls {
                     ,<a href="$1">$1</a>,gx;
         #
         # \href{URL}{TEXT} -> <a href="URL">TEXT</a>
+        #warn "html href: $string\n" if $string =~ /href/;
         $string =~ s,\\href$endcw\{([^}]*)\}\s*\{([^}]*)\}
                     ,<a href="$1">$2</a>,gx;
 
@@ -279,7 +280,7 @@ sub _convert_urls {
         # removed.  We want to accept and ignore such extra braces,
         # hence the \{+ ... \}+ in recognizing TEXT.
         # 
-        #warn "txt url: starting with $string\n";
+        #warn "txt url: starting with $string\n" if $string =~ /href/;
         if ($string =~ m/\\href$endcw\{([^}]*)\}\s*\{+([^}]*)\}+/) {
           my $url = $1;
           my $text = $2;
