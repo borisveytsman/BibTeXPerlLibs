@@ -92,6 +92,8 @@ sub convert {
     $string = _convert_german($string) if $options{german};
     $string = _convert_symbols($string);
     $string = _convert_ligatures($string);
+    $string = _convert_glue_etc_primitives($string);
+    _debug("after the rest: $string");
     
     # Let's handle ties here, after all the other conversions, since
     # they don't fit well with any of the tables. We don't handle TeX's
@@ -104,25 +106,6 @@ sub convert {
     # 
     $string =~ s,([^/])~,$1 ,g;
     
-    # Remove kerns. Clearly needs generalizing/sharpening to recognize
-    # dimens better, and plenty of other commands could use it.
-    # Here, we only handle literal dimensions ("+1.3pt"), not dimens
-    # referring to control sequences, with or without factors
-    # ("1.1\baselineskip").
-    #_debug("before kern: $string");
-    my $dimen_re = qr/[-+]?[0-9., ]+[a-z][a-z]\s*/;
-    $string =~ s!\\kern${endcw}${dimen_re}!!g;
-    
-    # What the heck, let's do \hfuzz and \vfuzz too. They come up pretty
-    # often and it's practically the same thing (just also ignore optional =)..
-    $string =~ s!\\[hv]fuzz${endcw}=?\s*${dimen_re}!!g;    
-
-    # And here is \penalty. natbib outputs \penalty0 sometimes.
-    # Similar with $dimen_re, we only handle literal and decimal
-    # integers here, not things like "0 or `A.
-    my $number_re = qr/[-+]?[0-9]+\s*/;
-    $string =~ s!\\penalty${endcw}\s*${number_re}!!g;    
-
     # After all the conversions, $string contains \x{....} constructs
     # (Perl Unicode characters) where translations have happened. Change
     # those to the desired output format. Thus we assume that the
@@ -430,6 +413,40 @@ sub _convert_ligatures {
     $string;
 }
 
+
+# Remove primitives like \kern, \hskip, \penalty, etc.
+#
+sub _convert_glue_etc_primitives {
+  my ($string) = @_;
+  
+  # Remove kerns. Clearly needs generalizing/sharpening to recognize
+  # dimens better, and plenty of other commands could use it.
+  # Here, we only handle literal dimensions ("+1.3pt"), not dimens
+  # referring to control sequences, with or without factors
+  # ("1.1\baselineskip").
+  #_debug("before kern: $string");
+  my $dimen_re = qr/[-+]?[0-9., ]+[a-z][a-z]\s*/;
+  $string =~ s!\\kern${endcw}${dimen_re}!!g;
+
+  # Let's do \hfuzz and \vfuzz too. They come up pretty often and it's
+  # practically the same thing (just also ignore optional =)..
+  $string =~ s!\\[hv]fuzz${endcw}=?\s*${dimen_re}!!g;    
+
+  # \hskip and \vskip are dimens possibly preceded by "plus" or "minus".
+  # In contrast to the above, output a space as the replacement,
+  # to avoid words running together.
+  my $glue_re = qr/${dimen_re}((plus|minus)${dimen_re})*/;
+  $string =~ s!\\[hv]skip${endcw}\s*${glue_re}! !g;
+  
+  # And here is \penalty. natbib outputs \penalty0 sometimes.
+  # Similar with $dimen_re, we only handle literal and decimal
+  # integers here, not things like "0 or `A.
+  my $number_re = qr/[-+]?[0-9]+\s*/;
+  $string =~ s!\\penalty${endcw}\s*${number_re}!!g;    
+
+  return $string;
+}
+
 # 
 # Convert LaTeX markup commands in STRING like \textbf{...} and
 # {\bfshape ...} and {\bf ...}.
@@ -480,6 +497,12 @@ sub _convert_markups {
     $string =~ s/\{\\(?:$markups)$endcw//g;
     #warn " after {\\markup: $string\n";
 
+    # Remove braces and \command in: \MARKUP ...}
+    # We might have previously removed some braces, and no longer have
+    # the matching {.  Happens with {\sl ... \bf ...}, e.g., Wermuth bbls.
+    $string =~ s/\\(?:$markups)$endcw(.*)\}/$1/g;
+    #warn " after \\markup...}: $string\n";
+
     # Ultimately we remove all braces in ltx2crossrefxml SanitizeText fns,
     # so the unmatched braces don't matter ... that code should be moved here.
 
@@ -507,12 +530,16 @@ sub _convert_markups_html {
         $string =~ s/\{([^{}]+)\\$markup(shape)?$endcw([^{}]+)\}
                     /$1$tag$3$end_tag/gx;
 
-        # {\MARKUP(shape) y} -> <mk>y</mk>. Same as previous but without
-        # the x part. Could do it in one regex but this seems clearer.
-        $string =~ s/\{\\$markup(shape)?$endcw([^{}]+)\}
+        # {\MARKUP(shape) y} -> <mk>y</mk>
+        # or
+        # \MARKUP(shape) y} -> <mk>y</mk> (without the {).
+        # Same as previous but without the x part. Could do it in one
+        # regex but this seems clearer. The { might be missing due to
+        # previous brace removals, as above.
+        $string =~ s/\{?\s*\\$markup(shape)?$endcw([^{}]+)\}
                     /$tag$2$end_tag/gx;
-        
-        # for {\MARKUP(shape) ... with no matching brace, we don't know
+
+        # for {\MARKUP(shape) ... with no matching right brace, we don't know
         # where to put the end tag, so seems best to do nothing.
     }
     

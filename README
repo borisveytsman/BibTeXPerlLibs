@@ -19,6 +19,9 @@ crossrefware package (which has also been the motivation for continued
 development here).
 
 Changes:
+                          LaTeX::ToUnicode: handle \vskip and \hskip;
+                            handle common math function names (\sin, etc.);
+                            convert $ to \x{0024} to avoid literal $ in output.
 
   version 1.93 2025-08-31 BibTeX::Parser: match @string identifiers
                             case-insensitively, as BibTeX does.
