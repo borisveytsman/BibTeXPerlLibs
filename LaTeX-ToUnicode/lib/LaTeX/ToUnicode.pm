@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package LaTeX::ToUnicode;
 BEGIN {
-  $LaTeX::ToUnicode::VERSION = '1.93';
+  $LaTeX::ToUnicode::VERSION = '1.94';
 }
 #ABSTRACT: Convert LaTeX commands to Unicode (simplistically)
 
@@ -439,10 +439,14 @@ sub _convert_glue_etc_primitives {
   $string =~ s!\\[hv]skip${endcw}\s*${glue_re}! !g;
   
   # And here is \penalty. natbib outputs \penalty0 sometimes.
-  # Similar with $dimen_re, we only handle literal and decimal
+  # Similar with $dimen_re, we only handle literal decimal
   # integers here, not things like "0 or `A.
   my $number_re = qr/[-+]?[0-9]+\s*/;
   $string =~ s!\\penalty${endcw}\s*${number_re}!!g;    
+  
+  # \looseness is almost the same as \penalty; also accept an optional =.
+  $string =~ s!\\looseness${endcw}\s*=?\s*${number_re}!!g;    
+
 
   return $string;
 }
@@ -819,7 +823,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2025 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2026 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.
