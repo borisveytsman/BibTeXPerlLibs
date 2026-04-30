@@ -1,6 +1,6 @@
 package LaTeX::ToUnicode::Tables;
 BEGIN {
-  $LaTeX::ToUnicode::Tables::VERSION = '1.93';
+  $LaTeX::ToUnicode::Tables::VERSION = '1.94';
 }
 use strict;
 use warnings;
@@ -58,13 +58,16 @@ our %MARKUPS = (
     'tt'  => 'tt',
 );
 
-# More commands taking arguments that we want to handle.
+# More commands taking arguments that we want to recognize, either to
+# handle or to ignore.
 # 
 our %ARGUMENT_COMMANDS = (
     'emph'      => ['\textem{', '}'], # \textem doesn't exist, but we handle it
     'enquote'   => ["`",        "'"],
     'natexlab'  => ["",         ""],  # natbib
     'path'      => ['\texttt{', '}'], # ugh, might not be a braced argument
+    'textgreek' => ["",         ""],  # see comments in ARGUMENT_COMMANDS below
+    'vadjust'   => ["",         ""],
 );
 
 #  Non-alphabetic \COMMANDs, other than accents and special cases.
@@ -143,6 +146,7 @@ our %CONTROL_WORDS_EMPTY = (
     'protect'       => '',
     'raggedright'   => '',
     'relax'         => '',
+    'string'        => '', # often precedes ~, which is taken literally
     'thinspace'     => '',
     'unskip'        => '',
     'urlprefix'     => '',
@@ -715,8 +719,13 @@ before the argument, the second being the text to insert after. For
 example, for C<enquote> the value is C<["`", "'"]>. The inserted text is
 subject to further replacements.
 
-Only three such commands are currently handled: C<\emph>, C<\enquote>,
-and C<\path>.
+Three such commands are currently handled: C<\emph>, C<\enquote>, and
+C<\path> (although C<\path> does not require its argument to be in
+braces, that is the only form we recognize). We also recognize and
+ignore a few other commands taking arguments, such as C<\vadjust> and
+C<\textgreek>. (The idea of ignoring C<\textgreek> is that if the
+argument is UTF-8 Greek characters, most likely they will be rendered
+fine by the browser or whatever. We can't solve the hyphenation problem.)
 
 =head2 %CONTROL_SYMBOLS
 
@@ -778,7 +787,7 @@ L<https://github.com/borisveytsman/bibtexperllibs>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010-2025 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2010-2026 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl5 programming language system itself.
