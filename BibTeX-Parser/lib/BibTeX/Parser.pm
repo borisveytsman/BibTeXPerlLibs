@@ -1,6 +1,6 @@
 package BibTeX::Parser;
 {
-    $BibTeX::Parser::VERSION = '1.93';
+    $BibTeX::Parser::VERSION = '1.94';
 }
 # ABSTRACT: A pure perl BibTeX parser
 use warnings;
@@ -431,7 +431,7 @@ Karl Berry <karl@freefriends.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2013-2025 Gerhard Gossen, Boris Veytsman, Karl Berry
+Copyright 2013-2024 Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
