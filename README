@@ -1,5 +1,5 @@
 			   BibTeX Perl Libs
-			     Version 1.93
+			     Version 1.94
 		  Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This package provides BibTeX-related Perl libraries by Gerhard Gossen,
@@ -19,8 +19,13 @@ crossrefware package (which has also been the motivation for continued
 development here).
 
 Changes:
-                          LaTeX::ToUnicode: handle \vskip and \hskip;
+			  BibTeX::Parser: predefine j-tugboat to
+			    avoid irritating source editing.
+			    
+                          LaTeX::ToUnicode:
                             handle common math function names (\sin, etc.);
+                            ignore \vskip, \hskip, \looseness, \string,
+                              \textgreek, et al.;
                             convert $ to \x{0024} to avoid literal $ in output.
 
   version 1.93 2025-08-31 BibTeX::Parser: match @string identifiers
