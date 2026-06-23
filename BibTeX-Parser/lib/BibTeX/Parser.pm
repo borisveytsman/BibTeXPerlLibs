@@ -1,6 +1,6 @@
 package BibTeX::Parser;
 {
-    $BibTeX::Parser::VERSION = '1.94';
+    $BibTeX::Parser::VERSION = '1.95';
 }
 # ABSTRACT: A pure perl BibTeX parser
 use warnings;
@@ -36,7 +36,49 @@ sub new {
         },
         line   => -1,
         buffer => "",
+	entries => {}
     }, $class;
+}
+
+sub read {
+    my $self = shift;
+    if (!exists $self->{opts}->{errorlevel}) {
+	$self->{opts}->{errorlevel} = 'warn';
+    }
+    while (my $entry=$self->next) {
+	if ($entry->parse_ok) {
+	    $self->{entries}->{$entry->key()} = $entry;
+	} else {
+	    if ($self->{opts}->{errorlevel} eq 'warn') {
+		warn "BibTeX Parser: Skipping entry in line $."
+	    } elsif ($self->{opts}->{errorlevel} eq 'error') {
+		exit("BibTeX Parser: Error in line $.")
+	    }
+	}
+    }
+}
+
+sub n {
+    my $self = shift;
+    return(scalar keys %{$self->{entries}});
+}
+
+sub entrykeys {
+    my $self = shift;
+    my @result = keys %{$self->{entries}};
+    return(\@result);
+}
+
+sub has {
+    my $self = shift;
+    my $key = shift;
+    return(exists($self->{entries}->{$key}));
+}
+
+sub entry {
+    my $self = shift;
+    my $key = shift;
+    return($self->{entries}->{$key});
 }
 
 sub _slurp_close_bracket;
@@ -359,9 +401,9 @@ Parses BibTeX files.
     my $fh = IO::File->new("filename");
 
     # Create parser object ...
-    my $parser = BibTeX::Parser->new($fh);
+    my $parser = BibTeX::Parser->new($fh, $opts);
     
-    # ... and iterate over entries
+    # ... and either iterate over entries
     while (my $entry = $parser->next ) {
 	    if ($entry->parse_ok) {
 		    my $type    = $entry->type;
@@ -382,7 +424,26 @@ Parses BibTeX files.
 	    }
     }
 
+   # ... or read all entries at once
+   $parser->read();
+   my $num_entries = $parser->n();
+   my $entrykeys = $parser->entrykeys();
+   foreach my $key (@{$entrykeys}) {
+      my $entry = $parser->entry($key);
+      ...
+   }
+   if ($parser->has{'thekey') {
+     $theentry = $parser->entry('thekey');
+   }
 
+=head1 DESCRIPTION
+
+  There are two interfaces for BiBTeX::Parser: the serial one and
+  the caching one.  The serial interface can be used for very large
+  files.  It reads entries one by one, and outputs them using $parser->next()
+  function.  In other cases you might be better off with the caching
+  interface.  It reads all the entries at once, and can output the
+  list of keys or the entry with the given key.
 
 =head1 FUNCTIONS
 
@@ -394,9 +455,50 @@ Parameters:
 
 	* fh: A filehandle
 
+        * opts: a refernce to the hash of options.  Among other
+          options is 'errorlevel', used in the caching interface when
+          processing a non-parseable entry.  Can be 'warn' (the
+          default), 'erorr', or 'ignore'.  Note that in serial
+          interface the error processing is the responsibility of the
+          user.
+
 =head2 next
 
-Returns the next parsed entry or undef.
+Returns the next parsed entry or undef.  Cannot be combined with
+the L<read> interface described below.
+
+=head2 read
+
+Read all the entries from the filehandle in the internal cache.  
+
+
+
+
+=head2 n
+
+Returns the number of entries after L<read> function has been called
+
+=head2 entrykeys
+
+Returns the array of keys after L<read> function has been called
+
+=head2 entry
+
+Returns an entry with the given key after L<read> function has been called
+
+Parameters:
+
+    * key: the key
+
+=head2 has
+
+Returns true if the cached file has the given entry
+
+Parameters:
+
+    * key: the key
+
+
 
 
 =head1 NOTES
@@ -421,7 +523,7 @@ L<BibTeX::Parser::Author>
 
 =head1 VERSION
 
-version 1.93
+version 1.95
 
 =head1 AUTHOR
 

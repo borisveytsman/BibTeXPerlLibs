@@ -1,5 +1,5 @@
 			   BibTeX Perl Libs
-			     Version 1.94
+			     Version 1.95
 		  Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This package provides BibTeX-related Perl libraries by Gerhard Gossen,
@@ -19,8 +19,14 @@ crossrefware package (which has also been the motivation for continued
 development here).
 
 Changes:
+
+ version 1.95 2026-06-23
+                         Tests update
+
+ version 1.94 2026-06-22
 			  BibTeX::Parser: predefine j-tugboat to
 			    avoid irritating source editing.
+			    new caching mode
 			    
                           LaTeX::ToUnicode:
                             handle common math function names (\sin, etc.);

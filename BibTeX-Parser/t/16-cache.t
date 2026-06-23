@@ -1,16 +1,23 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl 
 
-BEGIN{ unshift @INC, "./lib/";};
+use Test::More tests=>5;
 
-use BibTeX::Parser;
+use strict;
 use IO::File;
+use BibTeX::Parser;
 my $fh = new IO::File "t/bibs/english.bib", "r" ;
 
 my $parser = new BibTeX::Parser($fh);
 $parser->read();
-print "Number of entries: ", $parser->n(), "\n";
-print "Entries: ", join(", ", @{$parser->keys}), "\n";
-print "Existing entry: ", $parser->has('Quirk-CompGram'), "\n";
-print "Non-existing entry: ", $parser->has('QuirkCompGram'), "\n";
-print "Entry: ", $parser->entry('Quirk-CompGram')->to_string(), "\n";
+is($parser->n(), 8, "Number of cached entries is correct");
+is(join(", ", sort @{$parser->entrykeys()}),
+   "Carey, Cooper, Fowler-KingsEnglish, Fowler-ModernEnglish, Gowers, Hart, Partridge, Quirk-CompGram", "Keys are correct");
+is($parser->has('Quirk-CompGram'), 1, "Entry presence check is correc");
+is($parser->has('QuirkCompGram'), "", "Entry absence check is correc");
+is($parser->entry('Quirk-CompGram')->to_string(), "\@BOOK{Quirk-CompGram,
+    author = {Quirk, Randolph and Greenbaum, Sydney and Leach, Geoffrey and Svartnik, Jan},
+    title = {A Comprehensive Grammar of the {E}nglish Language},
+    publisher = {Longman},
+    year = {1985},
+}", "Entry check is correct");
 
