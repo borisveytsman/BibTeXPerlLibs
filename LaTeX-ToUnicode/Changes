@@ -1,5 +1,7 @@
 Changes for LaTeX::ToUnicode
 
+	2026-08-29 Handle \downarrow \leftarrow \rightarrow \uparrow.
+
 1.95    2026-06-23 Updated coverage tests
 
 1.94    2025-06-22 Handle \looseness, ignore \textgreek, \vadjust, \string

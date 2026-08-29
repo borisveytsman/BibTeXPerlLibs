@@ -1,5 +1,5 @@
 			   BibTeX Perl Libs
-			     Version 1.95
+			     Version 1.95+dev
 		  Gerhard Gossen, Boris Veytsman, Karl Berry
 
 This package provides BibTeX-related Perl libraries by Gerhard Gossen,
@@ -19,6 +19,8 @@ crossrefware package (which has also been the motivation for continued
 development here).
 
 Changes:
+
+			  LaTeX::ToUnicode: handle some \...arrow commands.
 
  version 1.95 2026-06-23
                          Tests update
