@@ -230,6 +230,7 @@ our %CONTROL_WORDS = (
     'tanh'           => 'tanh',
     'textbackslash'  => '\x{005C}', # entity so \ in output indicates
                                     # untranslated TeX source
+    'textbar'        => '\x{007C}', # literal | would be ok
     'textbraceleft'  => '\x{007B}', # entities so our bare-brace removal
     'textbraceright' => '\x{007D}', # skips them
     'textdagger'     => '\x{2020}',

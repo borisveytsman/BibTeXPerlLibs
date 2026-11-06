@@ -433,10 +433,13 @@ sub _convert_glue_etc_primitives {
   $string =~ s!\\[hv]fuzz${endcw}=?\s*${dimen_re}!!g;    
 
   # \hskip and \vskip are dimens possibly preceded by "plus" or "minus".
+  # We don't try to restrict to one "plus", etc.
   # In contrast to the above, output a space as the replacement,
   # to avoid words running together.
   my $glue_re = qr/${dimen_re}((plus|minus)${dimen_re})*/;
   $string =~ s!\\[hv]skip${endcw}\s*${glue_re}! !g;
+  # for \rightskip and leftskip, no replacement space.
+  $string =~ s!\\(right|left)skip${endcw}\s*${glue_re}!!g;
   
   # And here is \penalty. natbib outputs \penalty0 sometimes.
   # Similar with $dimen_re, we only handle literal decimal

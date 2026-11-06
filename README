@@ -19,11 +19,12 @@ crossrefware package (which has also been the motivation for continued
 development here).
 
 Changes:
-
+			  LaTeX::ToUnicode: ignore \rightskip,\leftskip.
+			  LaTeX::ToUnicode: handle \textbar.
 			  LaTeX::ToUnicode: handle some \...arrow commands.
 
  version 1.95 2026-06-23
-                         Tests update
+                          Tests update
 
  version 1.94 2026-06-22
 			  BibTeX::Parser: predefine j-tugboat to
